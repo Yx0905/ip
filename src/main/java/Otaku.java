@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
 /** Starts Otaku and prints its greeting. */
@@ -28,14 +29,15 @@ public class Otaku {
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
-            if (command.equals("bye")) {
+            CommandType commandType = getCommandType(command);
+            if (commandType == CommandType.BYE) {
                 System.out.println("Bye. Hope to see you again soon!");
                 System.out.println(DIVIDER);
                 break;
             }
 
             try {
-                processCommand(command, tasks);
+                processCommand(command, commandType, tasks);
             } catch (OtakuException e) {
                 System.out.println(" " + e.getMessage());
             }
@@ -44,18 +46,19 @@ public class Otaku {
     }
 
     /** Processes one non-exit command. */
-    private static void processCommand(String command, ArrayList<Task> tasks) throws OtakuException {
-        if (command.equals("list")) {
+    private static void processCommand(String command, CommandType commandType,
+            ArrayList<Task> tasks) throws OtakuException {
+        if (commandType == CommandType.LIST) {
             printList(tasks);
             return;
         }
-        if (command.equals("todo") || command.startsWith("todo ")) {
+        if (commandType == CommandType.TODO) {
             String description = command.substring(4).trim();
             requireNonEmpty(description, "I need a description after `todo`.");
             addTask(tasks, new Todo(description));
             return;
         }
-        if (command.equals("deadline") || command.startsWith("deadline ")) {
+        if (commandType == CommandType.DEADLINE) {
             String[] parts = command.substring(8).trim().split("\\s+/by\\s*", 2);
             if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
                 throw new OtakuException("A deadline needs a description and a time after `/by`.");
@@ -63,7 +66,7 @@ public class Otaku {
             addTask(tasks, new Deadline(parts[0].trim(), parts[1].trim()));
             return;
         }
-        if (command.equals("event") || command.startsWith("event ")) {
+        if (commandType == CommandType.EVENT) {
             String[] descriptionAndTimes = command.substring(5).trim().split("\\s+/from\\s+", 2);
             if (descriptionAndTimes.length != 2) {
                 throw new OtakuException("An event needs a description, a start time after `/from`, and an end time after `/to`.");
@@ -76,21 +79,21 @@ public class Otaku {
             addTask(tasks, new Event(descriptionAndTimes[0].trim(), times[0].trim(), times[1].trim()));
             return;
         }
-        if (command.equals("mark") || command.startsWith("mark ")) {
+        if (commandType == CommandType.MARK) {
             int taskNumber = parseTaskNumber(command.substring(4).trim(), "mark", tasks.size());
             tasks.get(taskNumber - 1).markAsDone();
             System.out.println(" Nice! I've marked this task as done:");
             System.out.println("   " + tasks.get(taskNumber - 1));
             return;
         }
-        if (command.equals("unmark") || command.startsWith("unmark ")) {
+        if (commandType == CommandType.UNMARK) {
             int taskNumber = parseTaskNumber(command.substring(6).trim(), "unmark", tasks.size());
             tasks.get(taskNumber - 1).unmarkAsDone();
             System.out.println(" OK, I've marked this task as not done yet:");
             System.out.println("   " + tasks.get(taskNumber - 1));
             return;
         }
-        if (command.equals("delete") || command.startsWith("delete ")) {
+        if (commandType == CommandType.DELETE) {
             int taskNumber = parseTaskNumber(command.substring(6).trim(), "delete", tasks.size());
             Task removedTask = tasks.remove(taskNumber - 1);
             System.out.println(" Noted. I've removed this task:");
@@ -100,6 +103,17 @@ public class Otaku {
         }
         throw new OtakuException(
                 "I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
+    }
+
+    /** Returns the enum value matching the command word, or {@link CommandType#UNKNOWN}. */
+    private static CommandType getCommandType(String command) {
+        for (CommandType commandType : CommandType.values()) {
+            String commandWord = commandType.name().toLowerCase(Locale.ROOT);
+            if (command.equals(commandWord) || command.startsWith(commandWord + " ")) {
+                return commandType;
+            }
+        }
+        return CommandType.UNKNOWN;
     }
 
     /** Prints every task currently stored in the task list. */
