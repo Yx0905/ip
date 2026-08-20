@@ -34,6 +34,7 @@ After each code update that can affect command-line behavior:
 
 1. Update `test/ui-test-plan.md` if its commands, inputs, or expected outputs have changed.
 2. Invoke the project-local `test-ui` skill at `.codex/skills/test-ui` and report its test transcript.
+3. For every command feature, include both valid and invalid inputs in the UI test plan. Place invalid inputs between valid ones when possible, then verify later output proves the invalid input did not change the task list.
 
 ## Git
 
