@@ -3,9 +3,10 @@ import java.util.Scanner;
 /** Starts Otaku and prints its greeting. */
 public class Otaku {
     private static final String DIVIDER = "____________________________________________________________";
+    private static final int MAX_TASKS = 100;
 
     /**
-     * Greets the user, echoes each command, and ends the session when the user enters {@code bye}.
+     * Greets the user, stores entered tasks, lists them on request, and ends the session on {@code bye}.
      *
      * @param args command-line arguments, which are not used
      */
@@ -23,6 +24,9 @@ public class Otaku {
         System.out.println(DIVIDER);
 
         Scanner scanner = new Scanner(System.in);
+        String[] tasks = new String[MAX_TASKS];
+        int taskCount = 0;
+
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
             if (command.equals("bye")) {
@@ -31,7 +35,15 @@ public class Otaku {
                 break;
             }
 
-            System.out.println("    " + command);
+            if (command.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println((i + 1) + ". " + tasks[i]);
+                }
+            } else if (taskCount < MAX_TASKS) {
+                tasks[taskCount] = command;
+                taskCount++;
+                System.out.println("added: " + command);
+            }
             System.out.println(DIVIDER);
         }
     }
