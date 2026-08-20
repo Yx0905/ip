@@ -27,9 +27,9 @@ Bye. Hope to see you again soon!
 ____________________________________________________________
   ```
 
-## Task types, errors, and status changes
+## Task types, errors, status changes, and deletion
 
-- **Aim:** Verify all inherited task types render their type icon, incorrect input produces helpful errors without changing the list, and marking and unmarking affect only the selected task.
+- **Aim:** Verify all inherited task types render their type icon, incorrect input produces helpful errors without changing the list, marking and unmarking affect only the selected task, and deletion removes only the selected task and renumbers those after it.
 - **Console input:**
 
   ```text
@@ -44,6 +44,9 @@ ____________________________________________________________
   mark 4
   mark 2
   unmark 2
+  delete two
+  delete 4
+  delete 2
   blah
   list
   bye
@@ -92,12 +95,19 @@ ____________________________________________________________
  OK, I've marked this task as not done yet:
    [D][ ] return book (by: Friday)
 ____________________________________________________________
- I don't recognize that command. Try todo, deadline, event, list, mark, unmark, or bye.
+ Please give a whole task number after `delete`.
+____________________________________________________________
+ Task 4 does not exist. Choose a number from 1 to 3.
+____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] return book (by: Friday)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+ I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.
 ____________________________________________________________
  Here are the tasks in your list:
 1.[T][X] read book
-2.[D][ ] return book (by: Friday)
-3.[E][ ] study (from: Monday to: Tuesday)
+2.[E][ ] study (from: Monday to: Tuesday)
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
