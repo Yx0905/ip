@@ -1,5 +1,5 @@
 /** Represents a task and whether it has been completed. */
-public class Task {
+public abstract class Task {
     private final String description;
     private boolean isDone;
 
@@ -8,7 +8,7 @@ public class Task {
      *
      * @param description description of the task
      */
-    public Task(String description) {
+    protected Task(String description) {
         this.description = description;
         this.isDone = false;
     }
@@ -28,9 +28,12 @@ public class Task {
         isDone = false;
     }
 
-    /** Returns this task's description. */
+    /** Returns the letter that identifies this task type. */
+    protected abstract String getTypeIcon();
+
+    /** Returns this task's description, type, and completion status. */
     @Override
     public String toString() {
-        return description;
+        return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + description;
     }
 }
