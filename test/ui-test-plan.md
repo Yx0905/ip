@@ -1,6 +1,6 @@
 # UI test plan
 
-Compile all files in `src/main/java` into an isolated temporary directory with Java 25, then run `Otaku` from that directory for each case.
+Compile all files in `src/main/java` into an isolated temporary directory with Java 25. Run each test case from its own empty temporary working directory so its `data/otaku.txt` file cannot affect another case.
 
 ## Greeting and exit
 
@@ -22,6 +22,110 @@ ____________________________________________________________
  \___/ |_/_/   \_\_|\_\\___/
 Hello! I'm Otaku.
 What can I do for you?
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+  ```
+
+## Save and load tasks across sessions
+
+- **Aim:** Verify that all task types, completion status, delimiter characters in descriptions, and deletion are persisted across separate Otaku processes.
+- **First-session console input:**
+
+  ```text
+  todo buy milk | tea
+  deadline submit report /by Friday 5pm
+  event workshop /from Monday 2pm /to Monday 4pm
+  mark 2
+  bye
+  ```
+
+- **Expected first-session output:**
+
+  ```text
+____________________________________________________________
+  ___ _____  _    _  ___   _
+ / _ \_   _|/ \  | |/ / | | |
+| | | || | / _ \ | ' /| | | |
+| |_| || |/ ___ \| . \| |_| |
+ \___/ |_/_/   \_\_|\_\\___/
+Hello! I'm Otaku.
+What can I do for you?
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] buy milk | tea
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] submit report (by: Friday 5pm)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] workshop (from: Monday 2pm to: Monday 4pm)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [D][X] submit report (by: Friday 5pm)
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+  ```
+
+- **Second-session console input (in the same working directory):**
+
+  ```text
+  list
+  delete 1
+  bye
+  ```
+
+- **Expected second-session output:**
+
+  ```text
+____________________________________________________________
+  ___ _____  _    _  ___   _
+ / _ \_   _|/ \  | |/ / | | |
+| | | || | / _ \ | ' /| | | |
+| |_| || |/ ___ \| . \| |_| |
+ \___/ |_/_/   \_\_|\_\\___/
+Hello! I'm Otaku.
+What can I do for you?
+____________________________________________________________
+ Here are the tasks in your list:
+1.[T][ ] buy milk | tea
+2.[D][X] submit report (by: Friday 5pm)
+3.[E][ ] workshop (from: Monday 2pm to: Monday 4pm)
+____________________________________________________________
+ Noted. I've removed this task:
+   [T][ ] buy milk | tea
+ Now you have 2 tasks in the list.
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+  ```
+
+- **Third-session console input (in the same working directory):**
+
+  ```text
+  list
+  bye
+  ```
+
+- **Expected third-session output:**
+
+  ```text
+____________________________________________________________
+  ___ _____  _    _  ___   _
+ / _ \_   _|/ \  | |/ / | | |
+| | | || | / _ \ | ' /| | | |
+| |_| || |/ ___ \| . \| |_| |
+ \___/ |_/_/   \_\_|\_\\___/
+Hello! I'm Otaku.
+What can I do for you?
+____________________________________________________________
+ Here are the tasks in your list:
+1.[D][X] submit report (by: Friday 5pm)
+2.[E][ ] workshop (from: Monday 2pm to: Monday 4pm)
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
