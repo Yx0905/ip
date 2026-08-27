@@ -13,6 +13,11 @@ public class Deadline extends Task {
         return "D";
     }
 
+    /** Returns the deadline text supplied by the user. */
+    public String getBy() {
+        return by;
+    }
+
     @Override
     public String toString() {
         return super.toString() + " (by: " + by + ")";

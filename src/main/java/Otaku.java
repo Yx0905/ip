@@ -1,3 +1,4 @@
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
@@ -5,6 +6,7 @@ import java.util.Scanner;
 /** Starts Otaku and prints its greeting. */
 public class Otaku {
     private static final String DIVIDER = "____________________________________________________________";
+    private static final Path DATA_FILE = Path.of("data", "otaku.txt");
 
     /**
      * Greets the user, stores entered tasks, lists them on request, and ends the session on {@code bye}.
@@ -25,7 +27,16 @@ public class Otaku {
         System.out.println(DIVIDER);
 
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
+        Storage storage = new Storage(DATA_FILE);
+        ArrayList<Task> tasks;
+        try {
+            tasks = storage.load();
+        } catch (OtakuException e) {
+            System.out.println(" " + e.getMessage());
+            System.out.println(" Starting with an empty task list instead.");
+            System.out.println(DIVIDER);
+            tasks = new ArrayList<>();
+        }
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
@@ -37,7 +48,10 @@ public class Otaku {
             }
 
             try {
-                processCommand(command, commandType, tasks);
+                boolean tasksChanged = processCommand(command, commandType, tasks);
+                if (tasksChanged) {
+                    storage.save(tasks);
+                }
             } catch (OtakuException e) {
                 System.out.println(" " + e.getMessage());
             }
@@ -46,17 +60,17 @@ public class Otaku {
     }
 
     /** Processes one non-exit command. */
-    private static void processCommand(String command, CommandType commandType,
+    private static boolean processCommand(String command, CommandType commandType,
             ArrayList<Task> tasks) throws OtakuException {
         if (commandType == CommandType.LIST) {
             printList(tasks);
-            return;
+            return false;
         }
         if (commandType == CommandType.TODO) {
             String description = command.substring(4).trim();
             requireNonEmpty(description, "I need a description after `todo`.");
             addTask(tasks, new Todo(description));
-            return;
+            return true;
         }
         if (commandType == CommandType.DEADLINE) {
             String[] parts = command.substring(8).trim().split("\\s+/by\\s*", 2);
@@ -64,7 +78,7 @@ public class Otaku {
                 throw new OtakuException("A deadline needs a description and a time after `/by`.");
             }
             addTask(tasks, new Deadline(parts[0].trim(), parts[1].trim()));
-            return;
+            return true;
         }
         if (commandType == CommandType.EVENT) {
             String[] descriptionAndTimes = command.substring(5).trim().split("\\s+/from\\s+", 2);
@@ -77,21 +91,21 @@ public class Otaku {
                 throw new OtakuException("An event needs a description, a start time after `/from`, and an end time after `/to`.");
             }
             addTask(tasks, new Event(descriptionAndTimes[0].trim(), times[0].trim(), times[1].trim()));
-            return;
+            return true;
         }
         if (commandType == CommandType.MARK) {
             int taskNumber = parseTaskNumber(command.substring(4).trim(), "mark", tasks.size());
             tasks.get(taskNumber - 1).markAsDone();
             System.out.println(" Nice! I've marked this task as done:");
             System.out.println("   " + tasks.get(taskNumber - 1));
-            return;
+            return true;
         }
         if (commandType == CommandType.UNMARK) {
             int taskNumber = parseTaskNumber(command.substring(6).trim(), "unmark", tasks.size());
             tasks.get(taskNumber - 1).unmarkAsDone();
             System.out.println(" OK, I've marked this task as not done yet:");
             System.out.println("   " + tasks.get(taskNumber - 1));
-            return;
+            return true;
         }
         if (commandType == CommandType.DELETE) {
             int taskNumber = parseTaskNumber(command.substring(6).trim(), "delete", tasks.size());
@@ -99,7 +113,7 @@ public class Otaku {
             System.out.println(" Noted. I've removed this task:");
             System.out.println("   " + removedTask);
             System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-            return;
+            return true;
         }
         throw new OtakuException(
                 "I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
