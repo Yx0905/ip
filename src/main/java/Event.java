@@ -15,6 +15,16 @@ public class Event extends Task {
         return "E";
     }
 
+    /** Returns the event's start time text. */
+    public String getFrom() {
+        return from;
+    }
+
+    /** Returns the event's end time text. */
+    public String getTo() {
+        return to;
+    }
+
     @Override
     public String toString() {
         return super.toString() + " (from: " + from + " to: " + to + ")";
