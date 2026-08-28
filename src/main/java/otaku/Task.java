@@ -1,3 +1,5 @@
+package otaku;
+
 /** Represents a task and whether it has been completed. */
 public abstract class Task {
     private final String description;

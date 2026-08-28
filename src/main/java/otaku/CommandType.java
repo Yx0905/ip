@@ -1,3 +1,5 @@
+package otaku;
+
 /** Represents the supported types of user commands. */
 public enum CommandType {
     TODO,

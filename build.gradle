@@ -37,7 +37,7 @@ test {
 }
 
 application {
-    mainClass = 'Otaku'
+    mainClass = 'otaku.Otaku'
 }
 
 jar {
