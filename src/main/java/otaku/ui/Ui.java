@@ -1,5 +1,9 @@
+package otaku.ui;
+
 import java.util.List;
 import java.util.Scanner;
+
+import otaku.task.Task;
 
 /** Handles all console input and output for Otaku. */
 public class Ui {

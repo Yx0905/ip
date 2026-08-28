@@ -1,8 +1,19 @@
+package otaku;
+
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import otaku.command.CommandType;
+import otaku.exception.OtakuException;
+import otaku.storage.Storage;
+import otaku.task.Deadline;
+import otaku.task.Event;
+import otaku.task.Task;
+import otaku.task.Todo;
+import otaku.ui.Ui;
 
 /** Starts Otaku and prints its greeting. */
 public class Otaku {

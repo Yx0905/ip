@@ -1,3 +1,5 @@
+package otaku.storage;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,6 +9,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+
+import otaku.exception.OtakuException;
+import otaku.task.Deadline;
+import otaku.task.Event;
+import otaku.task.Task;
+import otaku.task.Todo;
 
 /** Loads and saves Otaku tasks in a local data file. */
 public class Storage {

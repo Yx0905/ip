@@ -1,6 +1,6 @@
 # UI test plan
 
-Compile all files in `src/main/java` into an isolated temporary directory with Java 25. Run each test case from its own empty temporary working directory so its `data/otaku.txt` file cannot affect another case.
+Compile all files in `src/main/java` into an isolated temporary directory with Java 25, then launch the application using its fully qualified main class, `otaku.Otaku`. Run each test case from its own empty temporary working directory so its `data/otaku.txt` file cannot affect another case.
 
 ## Greeting and exit
 
