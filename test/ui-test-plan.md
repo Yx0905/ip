@@ -34,8 +34,8 @@ ____________________________________________________________
 
   ```text
   todo buy milk | tea
-  deadline submit report /by Friday 5pm
-  event workshop /from Monday 2pm /to Monday 4pm
+  deadline submit report /by 2026-09-30
+  event workshop /from 2026-10-01 /to 2026-10-02
   mark 2
   bye
   ```
@@ -57,15 +57,15 @@ ____________________________________________________________
  Now you have 1 tasks in the list.
 ____________________________________________________________
  Got it. I've added this task:
-   [D][ ] submit report (by: Friday 5pm)
+   [D][ ] submit report (by: Sep 30 2026)
  Now you have 2 tasks in the list.
 ____________________________________________________________
  Got it. I've added this task:
-   [E][ ] workshop (from: Monday 2pm to: Monday 4pm)
+   [E][ ] workshop (from: Oct 01 2026 to: Oct 02 2026)
  Now you have 3 tasks in the list.
 ____________________________________________________________
  Nice! I've marked this task as done:
-   [D][X] submit report (by: Friday 5pm)
+   [D][X] submit report (by: Sep 30 2026)
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
@@ -93,8 +93,8 @@ What can I do for you?
 ____________________________________________________________
  Here are the tasks in your list:
 1.[T][ ] buy milk | tea
-2.[D][X] submit report (by: Friday 5pm)
-3.[E][ ] workshop (from: Monday 2pm to: Monday 4pm)
+2.[D][X] submit report (by: Sep 30 2026)
+3.[E][ ] workshop (from: Oct 01 2026 to: Oct 02 2026)
 ____________________________________________________________
  Noted. I've removed this task:
    [T][ ] buy milk | tea
@@ -124,8 +124,8 @@ Hello! I'm Otaku.
 What can I do for you?
 ____________________________________________________________
  Here are the tasks in your list:
-1.[D][X] submit report (by: Friday 5pm)
-2.[E][ ] workshop (from: Monday 2pm to: Monday 4pm)
+1.[D][X] submit report (by: Sep 30 2026)
+2.[E][ ] workshop (from: Oct 01 2026 to: Oct 02 2026)
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
@@ -141,8 +141,11 @@ ____________________________________________________________
   todo
   deadline return book /by
   deadline return book /by Friday
+  deadline return book /by 2019-12-02
   event study /from Monday
-  event study /from Monday /to Tuesday
+  event study /from 2019-02-30 /to 2019-03-01
+  event study /from 2019-12-03 /to 2019-12-02
+  event study /from 2019-12-02 /to 2019-12-03
   mark one
   mark 1
   mark 4
@@ -176,14 +179,20 @@ ____________________________________________________________
 ____________________________________________________________
  A deadline needs a description and a time after `/by`.
 ____________________________________________________________
+ Please enter dates as yyyy-MM-dd, for example 2019-10-15.
+____________________________________________________________
  Got it. I've added this task:
-   [D][ ] return book (by: Friday)
+   [D][ ] return book (by: Dec 02 2019)
  Now you have 2 tasks in the list.
 ____________________________________________________________
  An event needs a description, a start time after `/from`, and an end time after `/to`.
 ____________________________________________________________
+ Please enter dates as yyyy-MM-dd, for example 2019-10-15.
+____________________________________________________________
+ An event's end date cannot be before its start date.
+____________________________________________________________
  Got it. I've added this task:
-   [E][ ] study (from: Monday to: Tuesday)
+   [E][ ] study (from: Dec 02 2019 to: Dec 03 2019)
  Now you have 3 tasks in the list.
 ____________________________________________________________
  Please give a whole task number after `mark`.
@@ -194,24 +203,24 @@ ____________________________________________________________
  Task 4 does not exist. Choose a number from 1 to 3.
 ____________________________________________________________
  Nice! I've marked this task as done:
-   [D][X] return book (by: Friday)
+   [D][X] return book (by: Dec 02 2019)
 ____________________________________________________________
  OK, I've marked this task as not done yet:
-   [D][ ] return book (by: Friday)
+   [D][ ] return book (by: Dec 02 2019)
 ____________________________________________________________
  Please give a whole task number after `delete`.
 ____________________________________________________________
  Task 4 does not exist. Choose a number from 1 to 3.
 ____________________________________________________________
  Noted. I've removed this task:
-   [D][ ] return book (by: Friday)
+   [D][ ] return book (by: Dec 02 2019)
  Now you have 2 tasks in the list.
 ____________________________________________________________
  I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.
 ____________________________________________________________
  Here are the tasks in your list:
 1.[T][X] read book
-2.[E][ ] study (from: Monday to: Tuesday)
+2.[E][ ] study (from: Dec 02 2019 to: Dec 03 2019)
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
