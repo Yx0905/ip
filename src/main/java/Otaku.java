@@ -3,11 +3,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Scanner;
 
 /** Starts Otaku and prints its greeting. */
 public class Otaku {
-    private static final String DIVIDER = "____________________________________________________________";
     private static final Path DATA_FILE = Path.of("data", "otaku.txt");
 
     /**
@@ -16,62 +14,49 @@ public class Otaku {
      * @param args command-line arguments, which are not used
      */
     public static void main(String[] args) {
-        String banner = "  ___ _____  _    _  ___   _\n"
-                + " / _ \\_   _|/ \\  | |/ / | | |\n"
-                + "| | | || | / _ \\ | ' /| | | |\n"
-                + "| |_| || |/ ___ \\| . \\| |_| |\n"
-                + " \\___/ |_/_/   \\_\\_|\\_\\\\___/";
-
-        System.out.println(DIVIDER);
-        System.out.println(banner);
-        System.out.println("Hello! I'm Otaku.");
-        System.out.println("What can I do for you?");
-        System.out.println(DIVIDER);
-
-        Scanner scanner = new Scanner(System.in);
+        Ui ui = new Ui();
+        ui.showWelcome();
         Storage storage = new Storage(DATA_FILE);
         ArrayList<Task> tasks;
         try {
             tasks = storage.load();
         } catch (OtakuException e) {
-            System.out.println(" " + e.getMessage());
-            System.out.println(" Starting with an empty task list instead.");
-            System.out.println(DIVIDER);
+            ui.showLoadingError(e.getMessage());
             tasks = new ArrayList<>();
         }
 
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine();
+        while (ui.hasNextCommand()) {
+            String command = ui.readCommand();
             CommandType commandType = getCommandType(command);
             if (commandType == CommandType.BYE) {
-                System.out.println("Bye. Hope to see you again soon!");
-                System.out.println(DIVIDER);
+                ui.showGoodbye();
+                ui.showDivider();
                 break;
             }
 
             try {
-                boolean tasksChanged = processCommand(command, commandType, tasks);
+                boolean tasksChanged = processCommand(command, commandType, tasks, ui);
                 if (tasksChanged) {
                     storage.save(tasks);
                 }
             } catch (OtakuException e) {
-                System.out.println(" " + e.getMessage());
+                ui.showError(e.getMessage());
             }
-            System.out.println(DIVIDER);
+            ui.showDivider();
         }
     }
 
     /** Processes one non-exit command. */
     private static boolean processCommand(String command, CommandType commandType,
-            ArrayList<Task> tasks) throws OtakuException {
+            ArrayList<Task> tasks, Ui ui) throws OtakuException {
         if (commandType == CommandType.LIST) {
-            printList(tasks);
+            ui.showTaskList(tasks);
             return false;
         }
         if (commandType == CommandType.TODO) {
             String description = command.substring(4).trim();
             requireNonEmpty(description, "I need a description after `todo`.");
-            addTask(tasks, new Todo(description));
+            addTask(tasks, new Todo(description), ui);
             return true;
         }
         if (commandType == CommandType.DEADLINE) {
@@ -79,7 +64,7 @@ public class Otaku {
             if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
                 throw new OtakuException("A deadline needs a description and a time after `/by`.");
             }
-            addTask(tasks, new Deadline(parts[0].trim(), parseDate(parts[1].trim())));
+            addTask(tasks, new Deadline(parts[0].trim(), parseDate(parts[1].trim())), ui);
             return true;
         }
         if (commandType == CommandType.EVENT) {
@@ -97,29 +82,25 @@ public class Otaku {
             if (to.isBefore(from)) {
                 throw new OtakuException("An event's end date cannot be before its start date.");
             }
-            addTask(tasks, new Event(descriptionAndTimes[0].trim(), from, to));
+            addTask(tasks, new Event(descriptionAndTimes[0].trim(), from, to), ui);
             return true;
         }
         if (commandType == CommandType.MARK) {
             int taskNumber = parseTaskNumber(command.substring(4).trim(), "mark", tasks.size());
             tasks.get(taskNumber - 1).markAsDone();
-            System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + tasks.get(taskNumber - 1));
+            ui.showTaskMarked(tasks.get(taskNumber - 1));
             return true;
         }
         if (commandType == CommandType.UNMARK) {
             int taskNumber = parseTaskNumber(command.substring(6).trim(), "unmark", tasks.size());
             tasks.get(taskNumber - 1).unmarkAsDone();
-            System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + tasks.get(taskNumber - 1));
+            ui.showTaskUnmarked(tasks.get(taskNumber - 1));
             return true;
         }
         if (commandType == CommandType.DELETE) {
             int taskNumber = parseTaskNumber(command.substring(6).trim(), "delete", tasks.size());
             Task removedTask = tasks.remove(taskNumber - 1);
-            System.out.println(" Noted. I've removed this task:");
-            System.out.println("   " + removedTask);
-            System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+            ui.showTaskDeleted(removedTask, tasks.size());
             return true;
         }
         throw new OtakuException(
@@ -135,14 +116,6 @@ public class Otaku {
             }
         }
         return CommandType.UNKNOWN;
-    }
-
-    /** Prints every task currently stored in the task list. */
-    private static void printList(ArrayList<Task> tasks) {
-        System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println((i + 1) + "." + tasks.get(i));
-        }
     }
 
     /** Ensures that a required command argument has content. */
@@ -176,10 +149,8 @@ public class Otaku {
     }
 
     /** Adds a task and prints the confirmation required by the command format. */
-    private static void addTask(ArrayList<Task> tasks, Task task) {
+    private static void addTask(ArrayList<Task> tasks, Task task, Ui ui) {
         tasks.add(task);
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + task);
-        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+        ui.showTaskAdded(task, tasks.size());
     }
 }
