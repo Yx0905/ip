@@ -28,6 +28,11 @@ public abstract class Task {
         return description;
     }
 
+    /** Returns whether this task's description contains the given keyword. */
+    public boolean containsKeyword(String keyword) {
+        return description.contains(keyword);
+    }
+
     /** Marks this task as completed. */
     public void markAsDone() {
         isDone = true;

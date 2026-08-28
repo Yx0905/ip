@@ -216,11 +216,76 @@ ____________________________________________________________
    [D][ ] return book (by: Dec 02 2019)
  Now you have 2 tasks in the list.
 ____________________________________________________________
- I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.
+ I don't recognize that command. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
 ____________________________________________________________
  Here are the tasks in your list:
 1.[T][X] read book
 2.[E][ ] study (from: Dec 02 2019 to: Dec 03 2019)
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+  ```
+
+## Find tasks by keyword
+
+- **Aim:** Verify that find shows only descriptions containing the case-sensitive keyword, reports a missing
+  keyword without changing the list, and handles a keyword with no matches.
+- **Console input:**
+
+  ```text
+  todo read book
+  deadline return book /by 2026-09-30
+  event book club /from 2026-10-01 /to 2026-10-02
+  todo read magazine
+  find book
+  find
+  find Book
+  list
+  bye
+  ```
+
+- **Expected output:**
+
+  ```text
+____________________________________________________________
+  ___ _____  _    _  ___   _
+ / _ \_   _|/ \  | |/ / | | |
+| | | || | / _ \ | ' /| | | |
+| |_| || |/ ___ \| . \| |_| |
+ \___/ |_/_/   \_\_|\_\\___/
+Hello! I'm Otaku.
+What can I do for you?
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: Sep 30 2026)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] book club (from: Oct 01 2026 to: Oct 02 2026)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read magazine
+ Now you have 4 tasks in the list.
+____________________________________________________________
+ Here are the matching tasks in your list:
+1.[T][ ] read book
+2.[D][ ] return book (by: Sep 30 2026)
+3.[E][ ] book club (from: Oct 01 2026 to: Oct 02 2026)
+____________________________________________________________
+ I need a keyword after `find`.
+____________________________________________________________
+ Here are the matching tasks in your list:
+____________________________________________________________
+ Here are the tasks in your list:
+1.[T][ ] read book
+2.[D][ ] return book (by: Sep 30 2026)
+3.[E][ ] book club (from: Oct 01 2026 to: Oct 02 2026)
+4.[T][ ] read magazine
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________

@@ -28,4 +28,13 @@ public class TaskTest {
         assertEquals(" ", task.getStatusIcon());
         assertEquals("[T][ ] read book", task.toString());
     }
+
+    @Test
+    public void containsKeyword_matchingAndNonMatchingKeywords_returnsExpectedResult() {
+        Task task = new Todo("read book");
+
+        assertTrue(task.containsKeyword("book"));
+        assertFalse(task.containsKeyword("Book"));
+        assertFalse(task.containsKeyword("magazine"));
+    }
 }

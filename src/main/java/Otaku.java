@@ -68,6 +68,12 @@ public class Otaku {
             printList(tasks);
             return false;
         }
+        if (commandType == CommandType.FIND) {
+            String keyword = command.substring(4).trim();
+            requireNonEmpty(keyword, "I need a keyword after `find`.");
+            printMatches(tasks, keyword);
+            return false;
+        }
         if (commandType == CommandType.TODO) {
             String description = command.substring(4).trim();
             requireNonEmpty(description, "I need a description after `todo`.");
@@ -123,7 +129,7 @@ public class Otaku {
             return true;
         }
         throw new OtakuException(
-                "I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
+                "I don't recognize that command. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.");
     }
 
     /** Returns the enum value matching the command word, or {@link CommandType#UNKNOWN}. */
@@ -142,6 +148,18 @@ public class Otaku {
         System.out.println(" Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             System.out.println((i + 1) + "." + tasks.get(i));
+        }
+    }
+
+    /** Prints tasks whose descriptions contain the given keyword. */
+    private static void printMatches(ArrayList<Task> tasks, String keyword) {
+        System.out.println(" Here are the matching tasks in your list:");
+        int matchNumber = 1;
+        for (Task task : tasks) {
+            if (task.containsKeyword(keyword)) {
+                System.out.println(matchNumber + "." + task);
+                matchNumber++;
+            }
         }
     }
 
