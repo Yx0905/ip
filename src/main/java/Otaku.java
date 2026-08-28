@@ -1,4 +1,6 @@
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
@@ -77,7 +79,7 @@ public class Otaku {
             if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
                 throw new OtakuException("A deadline needs a description and a time after `/by`.");
             }
-            addTask(tasks, new Deadline(parts[0].trim(), parts[1].trim()));
+            addTask(tasks, new Deadline(parts[0].trim(), parseDate(parts[1].trim())));
             return true;
         }
         if (commandType == CommandType.EVENT) {
@@ -90,7 +92,12 @@ public class Otaku {
                     || times[0].trim().isEmpty() || times[1].trim().isEmpty()) {
                 throw new OtakuException("An event needs a description, a start time after `/from`, and an end time after `/to`.");
             }
-            addTask(tasks, new Event(descriptionAndTimes[0].trim(), times[0].trim(), times[1].trim()));
+            LocalDate from = parseDate(times[0].trim());
+            LocalDate to = parseDate(times[1].trim());
+            if (to.isBefore(from)) {
+                throw new OtakuException("An event's end date cannot be before its start date.");
+            }
+            addTask(tasks, new Event(descriptionAndTimes[0].trim(), from, to));
             return true;
         }
         if (commandType == CommandType.MARK) {
@@ -142,6 +149,15 @@ public class Otaku {
     private static void requireNonEmpty(String value, String message) throws OtakuException {
         if (value.isEmpty()) {
             throw new OtakuException(message);
+        }
+    }
+
+    /** Parses an ISO date such as {@code 2019-10-15}. */
+    private static LocalDate parseDate(String input) throws OtakuException {
+        try {
+            return LocalDate.parse(input);
+        } catch (DateTimeParseException e) {
+            throw new OtakuException("Please enter dates as yyyy-MM-dd, for example 2019-10-15.");
         }
     }
 

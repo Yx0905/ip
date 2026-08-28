@@ -3,6 +3,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -67,11 +68,11 @@ public class Storage {
             return "T|" + status + "|" + encode(task.getDescription());
         }
         if (task instanceof Deadline deadline) {
-            return "D|" + status + "|" + encode(task.getDescription()) + "|" + encode(deadline.getBy());
+            return "D|" + status + "|" + encode(task.getDescription()) + "|" + encode(deadline.getBy().toString());
         }
         if (task instanceof Event event) {
             return "E|" + status + "|" + encode(task.getDescription()) + "|"
-                    + encode(event.getFrom()) + "|" + encode(event.getTo());
+                    + encode(event.getFrom().toString()) + "|" + encode(event.getTo().toString());
         }
         throw new OtakuException("I couldn't save an unsupported task type.");
     }
@@ -84,9 +85,10 @@ public class Storage {
             if (fields[0].equals("T") && fields.length == 3) {
                 task = new Todo(decode(fields[2]));
             } else if (fields[0].equals("D") && fields.length == 4) {
-                task = new Deadline(decode(fields[2]), decode(fields[3]));
+                task = new Deadline(decode(fields[2]), LocalDate.parse(decode(fields[3])));
             } else if (fields[0].equals("E") && fields.length == 5) {
-                task = new Event(decode(fields[2]), decode(fields[3]), decode(fields[4]));
+                task = new Event(decode(fields[2]), LocalDate.parse(decode(fields[3])),
+                        LocalDate.parse(decode(fields[4])));
             } else {
                 throw new IllegalArgumentException();
             }
