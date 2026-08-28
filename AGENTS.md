@@ -36,6 +36,10 @@ After each code update that can affect command-line behavior:
 2. Invoke the project-local `test-ui` skill at `.codex/skills/test-ui` and report its test transcript.
 3. For every command feature, include both valid and invalid inputs in the UI test plan. Place invalid inputs between valid ones when possible, then verify later output proves the invalid input did not change the task list.
 
+## JUnit testing
+
+Maintain JUnit tests for roughly the top 50% highest-value methods, prioritizing complex, core, and critical business logic. After each code change, update the relevant JUnit tests as needed to preserve this coverage target, and run them using Gradle.
+
 ## Git
 
 Use lightweight tags unless the user requests an annotated tag.
