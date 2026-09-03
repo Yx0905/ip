@@ -5,172 +5,176 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
 
-/** Starts Otaku and prints its greeting. */
+/** Provides Otaku's command-processing logic for both the CLI and JavaFX interfaces. */
 public class Otaku {
     private static final String DIVIDER = "____________________________________________________________";
     private static final Path DATA_FILE = Path.of("data", "otaku.txt");
+    private final Storage storage;
+    private final ArrayList<Task> tasks;
+    private final String loadWarning;
 
-    /**
-     * Greets the user, stores entered tasks, lists them on request, and ends the session on {@code bye}.
-     *
-     * @param args command-line arguments, which are not used
-     */
+    /** Creates an Otaku instance backed by the default data file. */
+    public Otaku() {
+        this(DATA_FILE);
+    }
+
+    /** Creates an instance backed by the given file, which is useful for isolated tests. */
+    Otaku(Path dataFile) {
+        storage = new Storage(dataFile);
+        ArrayList<Task> loadedTasks;
+        String warning = "";
+        try {
+            loadedTasks = storage.load();
+        } catch (OtakuException e) {
+            loadedTasks = new ArrayList<>();
+            warning = " " + e.getMessage() + "\n Starting with an empty task list instead.";
+        }
+        tasks = loadedTasks;
+        loadWarning = warning;
+    }
+
+    /** Runs the original command-line interface. */
     public static void main(String[] args) {
+        Otaku otaku = new Otaku();
+        System.out.println(DIVIDER);
+        System.out.println(otaku.getGreeting());
+        System.out.println(DIVIDER);
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNextLine()) {
+            String command = scanner.nextLine();
+            System.out.println(otaku.getResponse(command));
+            System.out.println(DIVIDER);
+            if (getCommandType(command) == CommandType.BYE) {
+                break;
+            }
+        }
+    }
+
+    /** Returns the greeting shown when either interface starts. */
+    public String getGreeting() {
         String banner = "  ___ _____  _    _  ___   _\n"
                 + " / _ \\_   _|/ \\  | |/ / | | |\n"
                 + "| | | || | / _ \\ | ' /| | | |\n"
                 + "| |_| || |/ ___ \\| . \\| |_| |\n"
                 + " \\___/ |_/_/   \\_\\_|\\_\\\\___/";
+        String greeting = banner + "\nHello! I'm Otaku.\nWhat can I do for you?";
+        return loadWarning.isEmpty() ? greeting : greeting + "\n" + loadWarning;
+    }
 
-        System.out.println(DIVIDER);
-        System.out.println(banner);
-        System.out.println("Hello! I'm Otaku.");
-        System.out.println("What can I do for you?");
-        System.out.println(DIVIDER);
-
-        Scanner scanner = new Scanner(System.in);
-        Storage storage = new Storage(DATA_FILE);
-        ArrayList<Task> tasks;
-        try {
-            tasks = storage.load();
-        } catch (OtakuException e) {
-            System.out.println(" " + e.getMessage());
-            System.out.println(" Starting with an empty task list instead.");
-            System.out.println(DIVIDER);
-            tasks = new ArrayList<>();
+    /** Processes one user command and returns the text to display. */
+    public String getResponse(String command) {
+        CommandType commandType = getCommandType(command);
+        if (commandType == CommandType.BYE) {
+            return "Bye. Hope to see you again soon!";
         }
-
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine();
-            CommandType commandType = getCommandType(command);
-            if (commandType == CommandType.BYE) {
-                System.out.println("Bye. Hope to see you again soon!");
-                System.out.println(DIVIDER);
-                break;
+        try {
+            CommandResult result = processCommand(command, commandType, tasks);
+            if (result.tasksChanged()) {
+                storage.save(tasks);
             }
-
-            try {
-                boolean tasksChanged = processCommand(command, commandType, tasks);
-                if (tasksChanged) {
-                    storage.save(tasks);
-                }
-            } catch (OtakuException e) {
-                System.out.println(" " + e.getMessage());
-            }
-            System.out.println(DIVIDER);
+            return result.message();
+        } catch (OtakuException e) {
+            return " " + e.getMessage();
         }
     }
 
     /** Processes one non-exit command. */
-    private static boolean processCommand(String command, CommandType commandType,
+    private static CommandResult processCommand(String command, CommandType type,
             ArrayList<Task> tasks) throws OtakuException {
-        if (commandType == CommandType.LIST) {
-            printList(tasks);
-            return false;
+        if (type == CommandType.LIST) {
+            return new CommandResult(formatTasks(tasks, null), false);
         }
-        if (commandType == CommandType.FIND) {
+        if (type == CommandType.FIND) {
             String keyword = command.substring(4).trim();
             requireNonEmpty(keyword, "I need a keyword after `find`.");
-            printMatches(tasks, keyword);
-            return false;
+            return new CommandResult(formatTasks(tasks, keyword), false);
         }
-        if (commandType == CommandType.TODO) {
+        if (type == CommandType.TODO) {
             String description = command.substring(4).trim();
             requireNonEmpty(description, "I need a description after `todo`.");
-            addTask(tasks, new Todo(description));
-            return true;
+            return addTask(tasks, new Todo(description));
         }
-        if (commandType == CommandType.DEADLINE) {
+        if (type == CommandType.DEADLINE) {
             String[] parts = command.substring(8).trim().split("\\s+/by\\s*", 2);
             if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
                 throw new OtakuException("A deadline needs a description and a time after `/by`.");
             }
-            addTask(tasks, new Deadline(parts[0].trim(), parseDate(parts[1].trim())));
-            return true;
+            return addTask(tasks, new Deadline(parts[0].trim(), parseDate(parts[1].trim())));
         }
-        if (commandType == CommandType.EVENT) {
+        if (type == CommandType.EVENT) {
             String[] descriptionAndTimes = command.substring(5).trim().split("\\s+/from\\s+", 2);
             if (descriptionAndTimes.length != 2) {
-                throw new OtakuException("An event needs a description, a start time after `/from`, and an end time after `/to`.");
+                throw eventFormatException();
             }
             String[] times = descriptionAndTimes[1].split("\\s+/to\\s*", 2);
             if (descriptionAndTimes[0].trim().isEmpty() || times.length != 2
                     || times[0].trim().isEmpty() || times[1].trim().isEmpty()) {
-                throw new OtakuException("An event needs a description, a start time after `/from`, and an end time after `/to`.");
+                throw eventFormatException();
             }
             LocalDate from = parseDate(times[0].trim());
             LocalDate to = parseDate(times[1].trim());
             if (to.isBefore(from)) {
                 throw new OtakuException("An event's end date cannot be before its start date.");
             }
-            addTask(tasks, new Event(descriptionAndTimes[0].trim(), from, to));
-            return true;
+            return addTask(tasks, new Event(descriptionAndTimes[0].trim(), from, to));
         }
-        if (commandType == CommandType.MARK) {
-            int taskNumber = parseTaskNumber(command.substring(4).trim(), "mark", tasks.size());
-            tasks.get(taskNumber - 1).markAsDone();
-            System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + tasks.get(taskNumber - 1));
-            return true;
+        if (type == CommandType.MARK || type == CommandType.UNMARK) {
+            String word = type.name().toLowerCase(Locale.ROOT);
+            int number = parseTaskNumber(command.substring(word.length()).trim(), word, tasks.size());
+            Task task = tasks.get(number - 1);
+            if (type == CommandType.MARK) {
+                task.markAsDone();
+                return new CommandResult(" Nice! I've marked this task as done:\n   " + task, true);
+            }
+            task.unmarkAsDone();
+            return new CommandResult(" OK, I've marked this task as not done yet:\n   " + task, true);
         }
-        if (commandType == CommandType.UNMARK) {
-            int taskNumber = parseTaskNumber(command.substring(6).trim(), "unmark", tasks.size());
-            tasks.get(taskNumber - 1).unmarkAsDone();
-            System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + tasks.get(taskNumber - 1));
-            return true;
-        }
-        if (commandType == CommandType.DELETE) {
-            int taskNumber = parseTaskNumber(command.substring(6).trim(), "delete", tasks.size());
-            Task removedTask = tasks.remove(taskNumber - 1);
-            System.out.println(" Noted. I've removed this task:");
-            System.out.println("   " + removedTask);
-            System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-            return true;
+        if (type == CommandType.DELETE) {
+            int number = parseTaskNumber(command.substring(6).trim(), "delete", tasks.size());
+            Task removed = tasks.remove(number - 1);
+            return new CommandResult(" Noted. I've removed this task:\n   " + removed
+                    + "\n Now you have " + tasks.size() + " tasks in the list.", true);
         }
         throw new OtakuException(
                 "I don't recognize that command. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.");
     }
 
-    /** Returns the enum value matching the command word, or {@link CommandType#UNKNOWN}. */
+    private static OtakuException eventFormatException() {
+        return new OtakuException(
+                "An event needs a description, a start time after `/from`, and an end time after `/to`.");
+    }
+
+    /** Returns the command word's enum value, or {@link CommandType#UNKNOWN}. */
     private static CommandType getCommandType(String command) {
-        for (CommandType commandType : CommandType.values()) {
-            String commandWord = commandType.name().toLowerCase(Locale.ROOT);
-            if (command.equals(commandWord) || command.startsWith(commandWord + " ")) {
-                return commandType;
+        for (CommandType type : CommandType.values()) {
+            String word = type.name().toLowerCase(Locale.ROOT);
+            if (command.equals(word) || command.startsWith(word + " ")) {
+                return type;
             }
         }
         return CommandType.UNKNOWN;
     }
 
-    /** Prints every task currently stored in the task list. */
-    private static void printList(ArrayList<Task> tasks) {
-        System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println((i + 1) + "." + tasks.get(i));
-        }
-    }
-
-    /** Prints tasks whose descriptions contain the given keyword. */
-    private static void printMatches(ArrayList<Task> tasks, String keyword) {
-        System.out.println(" Here are the matching tasks in your list:");
-        int matchNumber = 1;
+    /** Formats either all tasks or those matching a keyword. */
+    private static String formatTasks(ArrayList<Task> tasks, String keyword) {
+        String heading = keyword == null ? " Here are the tasks in your list:"
+                : " Here are the matching tasks in your list:";
+        StringBuilder response = new StringBuilder(heading);
+        int number = 1;
         for (Task task : tasks) {
-            if (task.containsKeyword(keyword)) {
-                System.out.println(matchNumber + "." + task);
-                matchNumber++;
+            if (keyword == null || task.containsKeyword(keyword)) {
+                response.append('\n').append(number++).append('.').append(task);
             }
         }
+        return response.toString();
     }
 
-    /** Ensures that a required command argument has content. */
     private static void requireNonEmpty(String value, String message) throws OtakuException {
         if (value.isEmpty()) {
             throw new OtakuException(message);
         }
     }
 
-    /** Parses an ISO date such as {@code 2019-10-15}. */
     private static LocalDate parseDate(String input) throws OtakuException {
         try {
             return LocalDate.parse(input);
@@ -179,25 +183,26 @@ public class Otaku {
         }
     }
 
-    /** Parses a valid task number and reports malformed or out-of-range values. */
     private static int parseTaskNumber(String input, String command, int taskCount) throws OtakuException {
         try {
-            int taskNumber = Integer.parseInt(input);
-            if (taskNumber < 1 || taskNumber > taskCount) {
-                throw new OtakuException("Task " + taskNumber + " does not exist. Choose a number from 1 to "
+            int number = Integer.parseInt(input);
+            if (number < 1 || number > taskCount) {
+                throw new OtakuException("Task " + number + " does not exist. Choose a number from 1 to "
                         + taskCount + ".");
             }
-            return taskNumber;
+            return number;
         } catch (NumberFormatException e) {
             throw new OtakuException("Please give a whole task number after `" + command + "`.");
         }
     }
 
-    /** Adds a task and prints the confirmation required by the command format. */
-    private static void addTask(ArrayList<Task> tasks, Task task) {
+    private static CommandResult addTask(ArrayList<Task> tasks, Task task) {
         tasks.add(task);
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + task);
-        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+        return new CommandResult(" Got it. I've added this task:\n   " + task
+                + "\n Now you have " + tasks.size() + " tasks in the list.", true);
+    }
+
+    /** Couples a command's display text with whether the task file needs saving. */
+    private record CommandResult(String message, boolean tasksChanged) {
     }
 }

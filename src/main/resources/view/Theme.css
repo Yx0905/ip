@@ -1,0 +1,17 @@
+.app-root { -fx-background-color: #f5f3ff; -fx-font-family: "Avenir Next", "Segoe UI", sans-serif; }
+.header { -fx-background-color: linear-gradient(to right, #2e1065, #6d28d9); -fx-padding: 16 22; }
+.title { -fx-font-size: 24px; -fx-font-weight: 800; -fx-text-fill: white; }
+.subtitle { -fx-font-size: 12px; -fx-text-fill: #ddd6fe; }
+.conversation, .conversation > .viewport { -fx-background-color: transparent; }
+.conversation { -fx-border-color: transparent; -fx-padding: 0; }
+.dialog-container { -fx-padding: 18 16; }
+.bubble { -fx-background-radius: 14; -fx-padding: 11 14; -fx-font-size: 14px; -fx-text-fill: #241b35; }
+.user-dialog .bubble { -fx-background-color: #6d28d9; -fx-text-fill: white; }
+.otaku-dialog .bubble { -fx-background-color: white; -fx-border-color: #e7e3f3; -fx-border-radius: 14; }
+.avatar { -fx-background-color: #2e1065; -fx-background-radius: 22; -fx-font-size: 10px; -fx-font-weight: 800; -fx-text-fill: white; }
+.user-dialog .avatar { -fx-background-color: #a78bfa; -fx-text-fill: #2e1065; }
+.composer { -fx-background-color: white; -fx-border-color: #e7e3f3 transparent transparent transparent; -fx-padding: 15 18; }
+.command-field { -fx-background-color: #f5f3ff; -fx-background-radius: 10; -fx-border-color: #ddd6fe; -fx-border-radius: 10; -fx-padding: 10 12; }
+.command-field:focused { -fx-border-color: #7c3aed; }
+.send-button { -fx-background-color: #6d28d9; -fx-background-radius: 10; -fx-font-weight: 700; -fx-text-fill: white; -fx-padding: 10 18; }
+.send-button:hover { -fx-background-color: #5b21b6; }

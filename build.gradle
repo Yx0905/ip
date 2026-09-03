@@ -14,7 +14,15 @@ repositories {
 }
 
 dependencies {
+    String javaFxVersion = '17.0.7'
     String jUnitVersion = '5.14.4'
+
+    ['win', 'mac', 'linux'].each { platform ->
+        implementation "org.openjfx:javafx-base:${javaFxVersion}:${platform}"
+        implementation "org.openjfx:javafx-controls:${javaFxVersion}:${platform}"
+        implementation "org.openjfx:javafx-fxml:${javaFxVersion}:${platform}"
+        implementation "org.openjfx:javafx-graphics:${javaFxVersion}:${platform}"
+    }
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
 
@@ -37,7 +45,7 @@ test {
 }
 
 application {
-    mainClass = 'Otaku'
+    mainClass = 'Launcher'
 }
 
 jar {
