@@ -34,7 +34,7 @@ public class Otaku {
     }
 
     /** Runs the original command-line interface. */
-    public static void main(String[] args) {
+    public static void main(String... args) {
         Otaku otaku = new Otaku();
         System.out.println(DIVIDER);
         System.out.println(otaku.getGreeting());
