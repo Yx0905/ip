@@ -47,6 +47,9 @@ Maintain JUnit tests for roughly the top 50% highest-value methods, prioritizing
 
 ## Git
 
+Before proposing, reviewing, or creating any commit, load and follow the project skill at
+`.codex/skills/seedu-git-standard/SKILL.md`.
+
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
