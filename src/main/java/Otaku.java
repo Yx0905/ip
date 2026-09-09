@@ -64,6 +64,8 @@ public class Otaku {
     /** Processes one non-exit command. */
     private static boolean processCommand(String command, CommandType commandType,
             ArrayList<Task> tasks) throws OtakuException {
+        assert commandType != CommandType.BYE : "Exit commands must be handled before command processing";
+
         if (commandType == CommandType.LIST) {
             printList(tasks);
             return false;
@@ -163,6 +165,8 @@ public class Otaku {
 
     /** Parses a valid task number and reports malformed or out-of-range values. */
     private static int parseTaskNumber(String input, String command, int taskCount) throws OtakuException {
+        assert taskCount >= 0 : "A task list cannot contain a negative number of tasks";
+
         try {
             int taskNumber = Integer.parseInt(input);
             if (taskNumber < 1 || taskNumber > taskCount) {
@@ -177,6 +181,9 @@ public class Otaku {
 
     /** Adds a task and prints the confirmation required by the command format. */
     private static void addTask(ArrayList<Task> tasks, Task task) {
+        assert tasks != null : "A task must be added to an initialized task list";
+        assert task != null : "Only a constructed task can be added to the task list";
+
         tasks.add(task);
         System.out.println(" Got it. I've added this task:");
         System.out.println("   " + task);
