@@ -94,14 +94,14 @@ public class Otaku {
 
     /** Adds a to-do task described by the command. */
     private static void addTodo(String command, ArrayList<Task> tasks) throws OtakuException {
-        String description = command.substring(4).trim();
+        String description = getArguments(command, CommandType.TODO);
         requireNonEmpty(description, "I need a description after `todo`.");
         addTask(tasks, new Todo(description));
     }
 
     /** Adds a deadline task described by the command. */
     private static void addDeadline(String command, ArrayList<Task> tasks) throws OtakuException {
-        String[] parts = command.substring(8).trim().split("\\s+/by\\s*", 2);
+        String[] parts = getArguments(command, CommandType.DEADLINE).split("\\s+/by\\s*", 2);
         if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
             throw new OtakuException("A deadline needs a description and a time after `/by`.");
         }
@@ -110,7 +110,7 @@ public class Otaku {
 
     /** Adds an event task described by the command. */
     private static void addEvent(String command, ArrayList<Task> tasks) throws OtakuException {
-        String[] descriptionAndTimes = command.substring(5).trim().split("\\s+/from\\s+", 2);
+        String[] descriptionAndTimes = getArguments(command, CommandType.EVENT).split("\\s+/from\\s+", 2);
         if (descriptionAndTimes.length != 2) {
             throw new OtakuException(
                     "An event needs a description, a start time after `/from`, and an end time after `/to`.");
@@ -131,7 +131,7 @@ public class Otaku {
 
     /** Marks the task selected by the command as complete. */
     private static void markTask(String command, ArrayList<Task> tasks) throws OtakuException {
-        int taskNumber = parseTaskNumber(command.substring(4).trim(), "mark", tasks.size());
+        int taskNumber = parseTaskNumber(getArguments(command, CommandType.MARK), "mark", tasks.size());
         tasks.get(taskNumber - 1).markAsDone();
         System.out.println(" Nice! I've marked this task as done:");
         System.out.println("   " + tasks.get(taskNumber - 1));
@@ -139,7 +139,7 @@ public class Otaku {
 
     /** Marks the task selected by the command as incomplete. */
     private static void unmarkTask(String command, ArrayList<Task> tasks) throws OtakuException {
-        int taskNumber = parseTaskNumber(command.substring(6).trim(), "unmark", tasks.size());
+        int taskNumber = parseTaskNumber(getArguments(command, CommandType.UNMARK), "unmark", tasks.size());
         tasks.get(taskNumber - 1).unmarkAsDone();
         System.out.println(" OK, I've marked this task as not done yet:");
         System.out.println("   " + tasks.get(taskNumber - 1));
@@ -147,7 +147,7 @@ public class Otaku {
 
     /** Deletes the task selected by the command. */
     private static void deleteTask(String command, ArrayList<Task> tasks) throws OtakuException {
-        int taskNumber = parseTaskNumber(command.substring(6).trim(), "delete", tasks.size());
+        int taskNumber = parseTaskNumber(getArguments(command, CommandType.DELETE), "delete", tasks.size());
         Task removedTask = tasks.remove(taskNumber - 1);
         System.out.println(" Noted. I've removed this task:");
         System.out.println("   " + removedTask);
@@ -163,6 +163,12 @@ public class Otaku {
             }
         }
         return CommandType.UNKNOWN;
+    }
+
+    /** Returns the text following the command word. */
+    private static String getArguments(String command, CommandType commandType) {
+        String commandWord = commandType.name().toLowerCase(Locale.ROOT);
+        return command.substring(commandWord.length()).trim();
     }
 
     /** Prints every task currently stored in the task list. */
