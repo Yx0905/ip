@@ -122,8 +122,14 @@ public class Otaku {
             System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
             return true;
         }
+        if (commandType == CommandType.SORT) {
+            requireNoArguments(command.substring(4).trim(), "sort");
+            TaskSorter.sortByDate(tasks);
+            printList(tasks);
+            return true;
+        }
         throw new OtakuException(
-                "I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
+                "I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, sort, or bye.");
     }
 
     /** Returns the enum value matching the command word, or {@link CommandType#UNKNOWN}. */
@@ -149,6 +155,13 @@ public class Otaku {
     private static void requireNonEmpty(String value, String message) throws OtakuException {
         if (value.isEmpty()) {
             throw new OtakuException(message);
+        }
+    }
+
+    /** Ensures that a command which takes no arguments has none. */
+    private static void requireNoArguments(String arguments, String command) throws OtakuException {
+        if (!arguments.isEmpty()) {
+            throw new OtakuException("The `" + command + "` command does not accept arguments.");
         }
     }
 

@@ -1,30 +1,20 @@
 # Otaku User Guide
 
-// Update the title above to match the actual product name
+Otaku is a task-tracking chatbot that manages todos, deadlines, and events through text commands.
 
-// Product screenshot goes here
+## Sorting tasks chronologically
 
-// Product intro goes here
+Use `sort` to place dated tasks in chronological order. Deadlines use their due date, events use their start date,
+and todos without dates appear last. Tasks with the same date retain their existing order.
 
-## Adding deadlines
+Example: `sort`
 
-// Describe the action and its outcome.
-
-// Give examples of usage
-
-Example: `keyword (optional arguments)`
-
-// A description of the expected outcome goes here
-
-```
-expected output
+```text
+Here are the tasks in your list:
+1.[E][ ] orientation (from: Jan 02 2026 to: Jan 03 2026)
+2.[D][ ] submit report (by: Sep 30 2026)
+3.[T][ ] buy stationery
 ```
 
-## Feature ABC
-
-// Feature details
-
-
-## Feature XYZ
-
-// Feature details
+The command does not accept arguments. For example, `sort date` produces an error and leaves the task order
+unchanged.

@@ -131,9 +131,11 @@ Bye. Hope to see you again soon!
 ____________________________________________________________
   ```
 
-## Task types, errors, status changes, and deletion
+## Task types, errors, status changes, deletion, and sorting
 
-- **Aim:** Verify all inherited task types render their type icon, incorrect input produces helpful errors without changing the list, marking and unmarking affect only the selected task, and deletion removes only the selected task and renumbers those after it.
+- **Aim:** Verify all inherited task types render their type icon, incorrect input produces helpful errors without
+  changing the list, marking and unmarking affect only the selected task, deletion removes only the selected task,
+  and sorting places dated tasks chronologically before undated tasks.
 - **Console input:**
 
   ```text
@@ -155,6 +157,10 @@ ____________________________________________________________
   delete 4
   delete 2
   blah
+  list
+  sort extra
+  list
+  sort
   list
   bye
   ```
@@ -216,11 +222,52 @@ ____________________________________________________________
    [D][ ] return book (by: Dec 02 2019)
  Now you have 2 tasks in the list.
 ____________________________________________________________
- I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.
+ I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, sort, or bye.
 ____________________________________________________________
  Here are the tasks in your list:
 1.[T][X] read book
 2.[E][ ] study (from: Dec 02 2019 to: Dec 03 2019)
+____________________________________________________________
+ The `sort` command does not accept arguments.
+____________________________________________________________
+ Here are the tasks in your list:
+1.[T][X] read book
+2.[E][ ] study (from: Dec 02 2019 to: Dec 03 2019)
+____________________________________________________________
+ Here are the tasks in your list:
+1.[E][ ] study (from: Dec 02 2019 to: Dec 03 2019)
+2.[T][X] read book
+____________________________________________________________
+ Here are the tasks in your list:
+1.[E][ ] study (from: Dec 02 2019 to: Dec 03 2019)
+2.[T][X] read book
+____________________________________________________________
+Bye. Hope to see you again soon!
+____________________________________________________________
+  ```
+
+- **Follow-up console input (in the same working directory):**
+
+  ```text
+  list
+  bye
+  ```
+
+- **Expected follow-up output:**
+
+  ```text
+____________________________________________________________
+  ___ _____  _    _  ___   _
+ / _ \_   _|/ \  | |/ / | | |
+| | | || | / _ \ | ' /| | | |
+| |_| || |/ ___ \| . \| |_| |
+ \___/ |_/_/   \_\_|\_\\___/
+Hello! I'm Otaku.
+What can I do for you?
+____________________________________________________________
+ Here are the tasks in your list:
+1.[E][ ] study (from: Dec 02 2019 to: Dec 03 2019)
+2.[T][X] read book
 ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
