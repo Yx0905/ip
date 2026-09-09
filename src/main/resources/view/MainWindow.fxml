@@ -10,7 +10,7 @@
 
 <AnchorPane prefHeight="680.0" prefWidth="560.0" styleClass="app-root"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="MainWindow">
+            fx:controller="otaku.ui.MainWindow">
     <children>
         <VBox spacing="4.0" styleClass="header" AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

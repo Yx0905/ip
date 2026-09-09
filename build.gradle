@@ -45,7 +45,7 @@ test {
 }
 
 application {
-    mainClass = 'Launcher'
+    mainClass = 'otaku.Launcher'
 }
 
 jar {

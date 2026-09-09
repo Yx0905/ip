@@ -1,9 +1,19 @@
+package otaku;
+
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
+
+import otaku.command.CommandType;
+import otaku.exception.OtakuException;
+import otaku.storage.Storage;
+import otaku.task.Deadline;
+import otaku.task.Event;
+import otaku.task.Task;
+import otaku.task.Todo;
 
 /** Provides Otaku's command-processing logic for both the CLI and JavaFX interfaces. */
 public class Otaku {
