@@ -146,7 +146,8 @@ public class Otaku {
                     + "\n Now you have " + tasks.size() + " tasks in the list.", true);
         }
         throw new OtakuException(
-                "I don't recognize that command. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.");
+                "I don't recognize that command. Try todo, deadline, event, list, find, mark, unmark, "
+                        + "delete, or bye.");
     }
 
     private static OtakuException eventFormatException() {
@@ -193,7 +194,8 @@ public class Otaku {
         }
     }
 
-    private static int parseTaskNumber(String input, String command, int taskCount) throws OtakuException {
+    private static int parseTaskNumber(String input, String command,
+            int taskCount) throws OtakuException {
         try {
             int number = Integer.parseInt(input);
             if (number < 1 || number > taskCount) {
