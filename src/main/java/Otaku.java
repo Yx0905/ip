@@ -64,66 +64,94 @@ public class Otaku {
     /** Processes one non-exit command. */
     private static boolean processCommand(String command, CommandType commandType,
             ArrayList<Task> tasks) throws OtakuException {
-        if (commandType == CommandType.LIST) {
+        switch (commandType) {
+        case LIST:
             printList(tasks);
             return false;
-        }
-        if (commandType == CommandType.TODO) {
-            String description = command.substring(4).trim();
-            requireNonEmpty(description, "I need a description after `todo`.");
-            addTask(tasks, new Todo(description));
+        case TODO:
+            addTodo(command, tasks);
             return true;
-        }
-        if (commandType == CommandType.DEADLINE) {
-            String[] parts = command.substring(8).trim().split("\\s+/by\\s*", 2);
-            if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
-                throw new OtakuException("A deadline needs a description and a time after `/by`.");
-            }
-            addTask(tasks, new Deadline(parts[0].trim(), parseDate(parts[1].trim())));
+        case DEADLINE:
+            addDeadline(command, tasks);
             return true;
-        }
-        if (commandType == CommandType.EVENT) {
-            String[] descriptionAndTimes = command.substring(5).trim().split("\\s+/from\\s+", 2);
-            if (descriptionAndTimes.length != 2) {
-                throw new OtakuException("An event needs a description, a start time after `/from`, and an end time after `/to`.");
-            }
-            String[] times = descriptionAndTimes[1].split("\\s+/to\\s*", 2);
-            if (descriptionAndTimes[0].trim().isEmpty() || times.length != 2
-                    || times[0].trim().isEmpty() || times[1].trim().isEmpty()) {
-                throw new OtakuException("An event needs a description, a start time after `/from`, and an end time after `/to`.");
-            }
-            LocalDate from = parseDate(times[0].trim());
-            LocalDate to = parseDate(times[1].trim());
-            if (to.isBefore(from)) {
-                throw new OtakuException("An event's end date cannot be before its start date.");
-            }
-            addTask(tasks, new Event(descriptionAndTimes[0].trim(), from, to));
+        case EVENT:
+            addEvent(command, tasks);
             return true;
-        }
-        if (commandType == CommandType.MARK) {
-            int taskNumber = parseTaskNumber(command.substring(4).trim(), "mark", tasks.size());
-            tasks.get(taskNumber - 1).markAsDone();
-            System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + tasks.get(taskNumber - 1));
+        case MARK:
+            markTask(command, tasks);
             return true;
-        }
-        if (commandType == CommandType.UNMARK) {
-            int taskNumber = parseTaskNumber(command.substring(6).trim(), "unmark", tasks.size());
-            tasks.get(taskNumber - 1).unmarkAsDone();
-            System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + tasks.get(taskNumber - 1));
+        case UNMARK:
+            unmarkTask(command, tasks);
             return true;
-        }
-        if (commandType == CommandType.DELETE) {
-            int taskNumber = parseTaskNumber(command.substring(6).trim(), "delete", tasks.size());
-            Task removedTask = tasks.remove(taskNumber - 1);
-            System.out.println(" Noted. I've removed this task:");
-            System.out.println("   " + removedTask);
-            System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+        case DELETE:
+            deleteTask(command, tasks);
             return true;
+        default:
+            throw new OtakuException(
+                    "I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
         }
-        throw new OtakuException(
-                "I don't recognize that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
+    }
+
+    /** Adds a to-do task described by the command. */
+    private static void addTodo(String command, ArrayList<Task> tasks) throws OtakuException {
+        String description = command.substring(4).trim();
+        requireNonEmpty(description, "I need a description after `todo`.");
+        addTask(tasks, new Todo(description));
+    }
+
+    /** Adds a deadline task described by the command. */
+    private static void addDeadline(String command, ArrayList<Task> tasks) throws OtakuException {
+        String[] parts = command.substring(8).trim().split("\\s+/by\\s*", 2);
+        if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
+            throw new OtakuException("A deadline needs a description and a time after `/by`.");
+        }
+        addTask(tasks, new Deadline(parts[0].trim(), parseDate(parts[1].trim())));
+    }
+
+    /** Adds an event task described by the command. */
+    private static void addEvent(String command, ArrayList<Task> tasks) throws OtakuException {
+        String[] descriptionAndTimes = command.substring(5).trim().split("\\s+/from\\s+", 2);
+        if (descriptionAndTimes.length != 2) {
+            throw new OtakuException(
+                    "An event needs a description, a start time after `/from`, and an end time after `/to`.");
+        }
+        String[] times = descriptionAndTimes[1].split("\\s+/to\\s*", 2);
+        if (descriptionAndTimes[0].trim().isEmpty() || times.length != 2
+                || times[0].trim().isEmpty() || times[1].trim().isEmpty()) {
+            throw new OtakuException(
+                    "An event needs a description, a start time after `/from`, and an end time after `/to`.");
+        }
+        LocalDate from = parseDate(times[0].trim());
+        LocalDate to = parseDate(times[1].trim());
+        if (to.isBefore(from)) {
+            throw new OtakuException("An event's end date cannot be before its start date.");
+        }
+        addTask(tasks, new Event(descriptionAndTimes[0].trim(), from, to));
+    }
+
+    /** Marks the task selected by the command as complete. */
+    private static void markTask(String command, ArrayList<Task> tasks) throws OtakuException {
+        int taskNumber = parseTaskNumber(command.substring(4).trim(), "mark", tasks.size());
+        tasks.get(taskNumber - 1).markAsDone();
+        System.out.println(" Nice! I've marked this task as done:");
+        System.out.println("   " + tasks.get(taskNumber - 1));
+    }
+
+    /** Marks the task selected by the command as incomplete. */
+    private static void unmarkTask(String command, ArrayList<Task> tasks) throws OtakuException {
+        int taskNumber = parseTaskNumber(command.substring(6).trim(), "unmark", tasks.size());
+        tasks.get(taskNumber - 1).unmarkAsDone();
+        System.out.println(" OK, I've marked this task as not done yet:");
+        System.out.println("   " + tasks.get(taskNumber - 1));
+    }
+
+    /** Deletes the task selected by the command. */
+    private static void deleteTask(String command, ArrayList<Task> tasks) throws OtakuException {
+        int taskNumber = parseTaskNumber(command.substring(6).trim(), "delete", tasks.size());
+        Task removedTask = tasks.remove(taskNumber - 1);
+        System.out.println(" Noted. I've removed this task:");
+        System.out.println("   " + removedTask);
+        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
     }
 
     /** Returns the enum value matching the command word, or {@link CommandType#UNKNOWN}. */
