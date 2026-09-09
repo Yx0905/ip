@@ -2,6 +2,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -128,13 +129,16 @@ public class Otaku {
 
     /** Returns the enum value matching the command word, or {@link CommandType#UNKNOWN}. */
     private static CommandType getCommandType(String command) {
-        for (CommandType commandType : CommandType.values()) {
-            String commandWord = commandType.name().toLowerCase(Locale.ROOT);
-            if (command.equals(commandWord) || command.startsWith(commandWord + " ")) {
-                return commandType;
-            }
-        }
-        return CommandType.UNKNOWN;
+        return Arrays.stream(CommandType.values())
+                .filter(commandType -> matchesCommandWord(command, commandType))
+                .findFirst()
+                .orElse(CommandType.UNKNOWN);
+    }
+
+    /** Returns whether the input starts with the word for the given command type. */
+    private static boolean matchesCommandWord(String command, CommandType commandType) {
+        String commandWord = commandType.name().toLowerCase(Locale.ROOT);
+        return command.equals(commandWord) || command.startsWith(commandWord + " ");
     }
 
     /** Prints every task currently stored in the task list. */
