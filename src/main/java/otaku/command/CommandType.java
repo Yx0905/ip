@@ -1,4 +1,4 @@
-package otaku;
+package otaku.command;
 
 /** Represents the supported types of user commands. */
 public enum CommandType {

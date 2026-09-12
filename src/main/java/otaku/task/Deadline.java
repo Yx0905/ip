@@ -1,4 +1,4 @@
-package otaku;
+package otaku.task;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

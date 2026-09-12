@@ -1,4 +1,4 @@
-package otaku;
+package otaku.exception;
 
 /** Represents an input error that Otaku can explain to the user. */
 public class OtakuException extends Exception {

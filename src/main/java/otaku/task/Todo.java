@@ -1,4 +1,4 @@
-package otaku;
+package otaku.task;
 
 /** Represents a task without a date or time. */
 public class Todo extends Task {
