@@ -1,3 +1,5 @@
+package otaku;
+
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -8,6 +10,8 @@ import java.util.Scanner;
 /** Starts Otaku and prints its greeting. */
 public class Otaku {
     private static final String DIVIDER = "____________________________________________________________";
+    private static final String EVENT_FORMAT_ERROR = "An event needs a description, a start time after `/from`, "
+            + "and an end time after `/to`.";
     private static final Path DATA_FILE = Path.of("data", "otaku.txt");
 
     /**
@@ -85,12 +89,12 @@ public class Otaku {
         if (commandType == CommandType.EVENT) {
             String[] descriptionAndTimes = command.substring(5).trim().split("\\s+/from\\s+", 2);
             if (descriptionAndTimes.length != 2) {
-                throw new OtakuException("An event needs a description, a start time after `/from`, and an end time after `/to`.");
+                throw new OtakuException(EVENT_FORMAT_ERROR);
             }
             String[] times = descriptionAndTimes[1].split("\\s+/to\\s*", 2);
             if (descriptionAndTimes[0].trim().isEmpty() || times.length != 2
                     || times[0].trim().isEmpty() || times[1].trim().isEmpty()) {
-                throw new OtakuException("An event needs a description, a start time after `/from`, and an end time after `/to`.");
+                throw new OtakuException(EVENT_FORMAT_ERROR);
             }
             LocalDate from = parseDate(times[0].trim());
             LocalDate to = parseDate(times[1].trim());
