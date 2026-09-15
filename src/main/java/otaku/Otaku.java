@@ -69,7 +69,8 @@ public class Otaku {
                 + "| | | || | / _ \\ | ' /| | | |\n"
                 + "| |_| || |/ ___ \\| . \\| |_| |\n"
                 + " \\___/ |_/_/   \\_\\_|\\_\\\\___/";
-        String greeting = banner + "\nHello! I'm Otaku.\nWhat can I do for you?";
+        String greeting = banner + "\nKonnichiwa! I'm Otaku, your questkeeper."
+                + "\nWhat mission shall we tackle next?";
         return loadWarning.isEmpty() ? greeting : greeting + "\n" + loadWarning;
     }
 
@@ -82,7 +83,7 @@ public class Otaku {
     public CommandResponse getCommandResponse(String command) {
         CommandType commandType = getCommandType(command);
         if (commandType == CommandType.BYE) {
-            return new CommandResponse("Bye. Hope to see you again soon!", false);
+            return new CommandResponse("Quest log sealed. Mata ne!", false);
         }
         try {
             CommandResult result = processCommand(command, commandType, tasks);
@@ -175,18 +176,18 @@ public class Otaku {
         Task task = tasks.get(number - 1);
         if (type == CommandType.MARK) {
             task.markAsDone();
-            return new CommandResult(" Nice! I've marked this task as done:\n   " + task, true);
+            return new CommandResult(" Quest cleared! This task is now complete:\n   " + task, true);
         }
         task.unmarkAsDone();
-        return new CommandResult(" OK, I've marked this task as not done yet:\n   " + task, true);
+        return new CommandResult(" Quest reopened. This task is active again:\n   " + task, true);
     }
 
     /** Deletes the task selected by the command. */
     private static CommandResult deleteTask(String command, ArrayList<Task> tasks) throws OtakuException {
         int number = parseTaskNumber(getArguments(command, CommandType.DELETE), "delete", tasks.size());
         Task removed = tasks.remove(number - 1);
-        return new CommandResult(" Noted. I've removed this task:\n   " + removed
-                + "\n Now you have " + tasks.size() + " tasks in the list.", true);
+        return new CommandResult(" Quest retired. I've removed this task:\n   " + removed
+                + "\n " + formatQuestCount(tasks.size()), true);
     }
 
     /** Sorts dated tasks chronologically and places undated tasks last. */
@@ -223,8 +224,8 @@ public class Otaku {
 
     /** Formats either all tasks or those matching a keyword. */
     private static String formatTasks(ArrayList<Task> tasks, String keyword) {
-        String heading = keyword == null ? " Here are the tasks in your list:"
-                : " Here are the matching tasks in your list:";
+        String heading = keyword == null ? " Your quest log:"
+                : " Matching quests:";
         StringBuilder response = new StringBuilder(heading);
         int number = 1;
         for (Task task : tasks) {
@@ -276,8 +277,14 @@ public class Otaku {
         assert task != null : "Only a constructed task can be added to the task list";
 
         tasks.add(task);
-        return new CommandResult(" Got it. I've added this task:\n   " + task
-                + "\n Now you have " + tasks.size() + " tasks in the list.", true);
+        return new CommandResult(" Quest accepted! I've added this task:\n   " + task
+                + "\n " + formatQuestCount(tasks.size()), true);
+    }
+
+    /** Formats a task count in Otaku's questkeeper voice. */
+    private static String formatQuestCount(int taskCount) {
+        String noun = taskCount == 1 ? "quest" : "quests";
+        return "Your log now holds " + taskCount + " " + noun + ".";
     }
 
     /** Couples a command's display text with whether the task file needs saving. */
