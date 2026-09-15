@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -110,7 +111,7 @@ public class Storage {
                 throw new IllegalArgumentException();
             }
             return task;
-        } catch (IllegalArgumentException e) {
+        } catch (DateTimeParseException | IllegalArgumentException e) {
             throw new OtakuException("Saved task data is invalid on line " + lineNumber + ".");
         }
     }

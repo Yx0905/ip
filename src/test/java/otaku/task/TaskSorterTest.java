@@ -22,4 +22,24 @@ public class TaskSorterTest {
 
         assertEquals(List.of(event, sameDateDeadline, laterDeadline, todo), tasks);
     }
+
+    @Test
+    public void sortByDate_emptyList_remainsEmpty() {
+        List<Task> tasks = new ArrayList<>();
+
+        TaskSorter.sortByDate(tasks);
+
+        assertEquals(List.of(), tasks);
+    }
+
+    @Test
+    public void sortByDate_onlyTodos_preservesOriginalOrder() {
+        Task first = new Todo("first");
+        Task second = new Todo("second");
+        List<Task> tasks = new ArrayList<>(List.of(first, second));
+
+        TaskSorter.sortByDate(tasks);
+
+        assertEquals(List.of(first, second), tasks);
+    }
 }

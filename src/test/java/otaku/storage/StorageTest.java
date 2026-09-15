@@ -3,6 +3,7 @@ package otaku.storage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -100,5 +101,64 @@ public class StorageTest {
         OtakuException exception = assertThrows(OtakuException.class, storage::load);
 
         assertEquals("Saved task data is invalid on line 1.", exception.getMessage());
+    }
+
+    @Test
+    public void load_invalidStatus_throwsExceptionWithLineNumber() throws IOException {
+        Path dataFile = tempDirectory.resolve("tasks.txt");
+        Files.writeString(dataFile, "T|2|cmVhZCBib29r", StandardCharsets.UTF_8);
+
+        OtakuException exception = assertThrows(OtakuException.class,
+                () -> new Storage(dataFile).load());
+
+        assertEquals("Saved task data is invalid on line 1.", exception.getMessage());
+    }
+
+    @Test
+    public void load_invalidBase64AndDate_throwsException() throws IOException {
+        Path invalidBase64File = tempDirectory.resolve("base64.txt");
+        Path invalidDateFile = tempDirectory.resolve("date.txt");
+        Files.writeString(invalidBase64File, "T|0|%%%", StandardCharsets.UTF_8);
+        Files.writeString(invalidDateFile, "D|0|cmVwb3J0|bm90LWEtZGF0ZQ==", StandardCharsets.UTF_8);
+
+        assertThrows(OtakuException.class, () -> new Storage(invalidBase64File).load());
+        assertThrows(OtakuException.class, () -> new Storage(invalidDateFile).load());
+    }
+
+    @Test
+    public void load_directoryInsteadOfFile_throwsReadableException() {
+        Storage storage = new Storage(tempDirectory);
+
+        OtakuException exception = assertThrows(OtakuException.class, storage::load);
+
+        assertTrue(exception.getMessage().contains("couldn't read saved tasks"));
+    }
+
+    @Test
+    public void save_parentPathIsFile_throwsWritableException() throws IOException {
+        Path parentFile = tempDirectory.resolve("not-a-directory");
+        Files.writeString(parentFile, "blocking file", StandardCharsets.UTF_8);
+        Storage storage = new Storage(parentFile.resolve("tasks.txt"));
+
+        OtakuException exception = assertThrows(OtakuException.class,
+                () -> storage.save(List.of(new Todo("read"))));
+
+        assertTrue(exception.getMessage().contains("couldn't save tasks"));
+    }
+
+    @Test
+    public void save_unsupportedTaskType_throwsException() {
+        Storage storage = new Storage(tempDirectory.resolve("tasks.txt"));
+        Task unsupportedTask = new Task("unsupported") {
+            @Override
+            protected String getTypeIcon() {
+                return "U";
+            }
+        };
+
+        OtakuException exception = assertThrows(OtakuException.class,
+                () -> storage.save(List.of(unsupportedTask)));
+
+        assertEquals("I couldn't save an unsupported task type.", exception.getMessage());
     }
 }
