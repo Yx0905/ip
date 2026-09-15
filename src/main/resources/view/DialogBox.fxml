@@ -9,7 +9,7 @@
          xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <Label fx:id="dialog" maxWidth="390.0" minHeight="-Infinity" styleClass="bubble" wrapText="true" />
-        <Label fx:id="avatar" alignment="CENTER" minHeight="44.0" minWidth="44.0" styleClass="avatar" />
+        <Label fx:id="avatar" alignment="CENTER" minHeight="32.0" minWidth="32.0" styleClass="avatar" />
     </children>
     <padding><Insets bottom="3.0" left="4.0" right="4.0" top="3.0" /></padding>
 </fx:root>

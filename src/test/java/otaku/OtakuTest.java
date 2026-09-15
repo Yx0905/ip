@@ -1,6 +1,7 @@
 package otaku;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
@@ -31,5 +32,13 @@ public class OtakuTest {
         Otaku secondSession = new Otaku(dataFile);
         assertEquals(" Here are the tasks in your list:\n"
                 + "1.[D][X] submit report (by: Sep 30 2026)", secondSession.getResponse("list"));
+    }
+
+    @Test
+    public void getCommandResponse_validAndInvalidCommands_reportsErrorStatus() {
+        Otaku otaku = new Otaku(temporaryDirectory.resolve("otaku.txt"));
+
+        assertFalse(otaku.getCommandResponse("list").isError());
+        assertTrue(otaku.getCommandResponse("unknown").isError());
     }
 }
