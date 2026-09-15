@@ -20,7 +20,7 @@ ____________________________________________________________
 | | | || | / _ \ | ' /| | | |
 | |_| || |/ ___ \| . \| |_| |
  \___/ |_/_/   \_\_|\_\\___/
-Konnichiwa! I'm Otaku, your questkeeper.
+Hello! I'm Otaku, your questkeeper.
 What mission shall we tackle next?
 ____________________________________________________________
 Quest log sealed. Mata ne!
@@ -49,7 +49,7 @@ ____________________________________________________________
 | | | || | / _ \ | ' /| | | |
 | |_| || |/ ___ \| . \| |_| |
  \___/ |_/_/   \_\_|\_\\___/
-Konnichiwa! I'm Otaku, your questkeeper.
+Hello! I'm Otaku, your questkeeper.
 What mission shall we tackle next?
 ____________________________________________________________
  Quest accepted! I've added this task:
@@ -88,7 +88,7 @@ ____________________________________________________________
 | | | || | / _ \ | ' /| | | |
 | |_| || |/ ___ \| . \| |_| |
  \___/ |_/_/   \_\_|\_\\___/
-Konnichiwa! I'm Otaku, your questkeeper.
+Hello! I'm Otaku, your questkeeper.
 What mission shall we tackle next?
 ____________________________________________________________
  Your quest log:
@@ -120,7 +120,7 @@ ____________________________________________________________
 | | | || | / _ \ | ' /| | | |
 | |_| || |/ ___ \| . \| |_| |
  \___/ |_/_/   \_\_|\_\\___/
-Konnichiwa! I'm Otaku, your questkeeper.
+Hello! I'm Otaku, your questkeeper.
 What mission shall we tackle next?
 ____________________________________________________________
  Your quest log:
@@ -174,7 +174,7 @@ ____________________________________________________________
 | | | || | / _ \ | ' /| | | |
 | |_| || |/ ___ \| . \| |_| |
  \___/ |_/_/   \_\_|\_\\___/
-Konnichiwa! I'm Otaku, your questkeeper.
+Hello! I'm Otaku, your questkeeper.
 What mission shall we tackle next?
 ____________________________________________________________
  Quest accepted! I've added this task:
@@ -195,7 +195,7 @@ ____________________________________________________________
 ____________________________________________________________
  Please enter dates as yyyy-MM-dd, for example 2019-10-15.
 ____________________________________________________________
- An event's end date cannot be before its start date.
+ An event's end date must be after its start date.
 ____________________________________________________________
  Quest accepted! I've added this task:
    [E][ ] study (from: Dec 02 2019 to: Dec 03 2019)
@@ -262,12 +262,78 @@ ____________________________________________________________
 | | | || | / _ \ | ' /| | | |
 | |_| || |/ ___ \| . \| |_| |
  \___/ |_/_/   \_\_|\_\\___/
-Konnichiwa! I'm Otaku, your questkeeper.
+Hello! I'm Otaku, your questkeeper.
 What mission shall we tackle next?
 ____________________________________________________________
  Your quest log:
 1.[E][ ] study (from: Dec 02 2019 to: Dec 03 2019)
 2.[T][X] read book
+____________________________________________________________
+Quest log sealed. Mata ne!
+____________________________________________________________
+  ```
+
+## Whitespace, duplicate parameters, and duplicate tasks
+
+- **Aim:** Verify blank input is handled safely, surrounding and repeated whitespace is accepted, duplicate tasks
+  and command parameters are rejected, equal event dates are rejected, and later output proves errors do not alter
+  the quest log.
+- **Console input:**
+
+  ```text
+
+    todo   plan next arc
+  todo   plan next arc
+  deadline report /by 2026-09-20 /by 2026-09-21
+  deadline report /by 2026-09-20
+  event sync /from 2026-09-20 /from 2026-09-21 /to 2026-09-22
+  event sync /from 2026-09-20 /to 2026-09-21 /to 2026-09-22
+  event sync /from 2026-09-20 /to 2026-09-20
+  event sync /from 2026-09-20 /to 2026-09-21
+    list
+  bye
+  ```
+
+- **Expected output:**
+
+  ```text
+____________________________________________________________
+  ___ _____  _    _  ___   _
+ / _ \_   _|/ \  | |/ / | | |
+| | | || | / _ \ | ' /| | | |
+| |_| || |/ ___ \| . \| |_| |
+ \___/ |_/_/   \_\_|\_\\___/
+Hello! I'm Otaku, your questkeeper.
+What mission shall we tackle next?
+____________________________________________________________
+ I need a command before I can update the quest log.
+____________________________________________________________
+ Quest accepted! I've added this task:
+   [T][ ] plan next arc
+ Your log now holds 1 quest.
+____________________________________________________________
+ That quest is already in your log.
+____________________________________________________________
+ A deadline accepts exactly one `/by` parameter.
+____________________________________________________________
+ Quest accepted! I've added this task:
+   [D][ ] report (by: Sep 20 2026)
+ Your log now holds 2 quests.
+____________________________________________________________
+ An event accepts exactly one `/from` parameter.
+____________________________________________________________
+ An event accepts exactly one `/to` parameter.
+____________________________________________________________
+ An event's end date must be after its start date.
+____________________________________________________________
+ Quest accepted! I've added this task:
+   [E][ ] sync (from: Sep 20 2026 to: Sep 21 2026)
+ Your log now holds 3 quests.
+____________________________________________________________
+ Your quest log:
+1.[T][ ] plan next arc
+2.[D][ ] report (by: Sep 20 2026)
+3.[E][ ] sync (from: Sep 20 2026 to: Sep 21 2026)
 ____________________________________________________________
 Quest log sealed. Mata ne!
 ____________________________________________________________
@@ -300,7 +366,7 @@ ____________________________________________________________
 | | | || | / _ \ | ' /| | | |
 | |_| || |/ ___ \| . \| |_| |
  \___/ |_/_/   \_\_|\_\\___/
-Konnichiwa! I'm Otaku, your questkeeper.
+Hello! I'm Otaku, your questkeeper.
 What mission shall we tackle next?
 ____________________________________________________________
  Quest accepted! I've added this task:

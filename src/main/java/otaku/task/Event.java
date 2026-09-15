@@ -17,7 +17,7 @@ public class Event extends Task {
         super(description);
         assert from != null : "An event start date must be parsed before construction";
         assert to != null : "An event end date must be parsed before construction";
-        assert !to.isBefore(from) : "Event dates must be ordered before construction";
+        assert to.isAfter(from) : "An event must end after it starts";
 
         this.from = from;
         this.to = to;

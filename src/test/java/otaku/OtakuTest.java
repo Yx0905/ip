@@ -41,4 +41,26 @@ public class OtakuTest {
         assertFalse(otaku.getCommandResponse("list").isError());
         assertTrue(otaku.getCommandResponse("unknown").isError());
     }
+
+    @Test
+    public void getResponse_malformedCommands_rejectsErrorsWithoutChangingState() {
+        Otaku otaku = new Otaku(temporaryDirectory.resolve("otaku.txt"));
+
+        assertTrue(otaku.getResponse("  todo read book  ").contains("Quest accepted!"));
+        assertEquals(" That quest is already in your log.", otaku.getResponse("todo read book"));
+        assertEquals(" A deadline accepts exactly one `/by` parameter.",
+                otaku.getResponse("deadline report /by 2026-09-20 /by 2026-09-21"));
+        assertEquals(" An event's end date must be after its start date.",
+                otaku.getResponse("event class /from 2026-09-20 /to 2026-09-20"));
+        assertEquals(" Your quest log:\n1.[T][ ] read book", otaku.getResponse("  list  "));
+    }
+
+    @Test
+    public void getCommandResponse_emptyOrNullCommand_reportsHelpfulError() {
+        Otaku otaku = new Otaku(temporaryDirectory.resolve("otaku.txt"));
+
+        assertTrue(otaku.getCommandResponse("   ").isError());
+        assertTrue(otaku.getCommandResponse(null).isError());
+        assertEquals(" I need a command before I can update the quest log.", otaku.getResponse(""));
+    }
 }
