@@ -15,8 +15,8 @@
         <VBox spacing="4.0" styleClass="header" AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <Label styleClass="title" text="OTAKU" />
-                <Label styleClass="subtitle" text="Your task companion" />
+                <Label styleClass="title" text="OTAKU // QUESTKEEPER" />
+                <Label styleClass="subtitle" text="Turn everyday tasks into completed quests" />
             </children>
         </VBox>
         <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER"
@@ -32,9 +32,9 @@
               AnchorPane.rightAnchor="0.0">
             <children>
                 <TextField fx:id="userInput" HBox.hgrow="ALWAYS" onAction="#handleUserInput"
-                           promptText="Type a command…" styleClass="command-field" />
+                           promptText="Enter your next move…" styleClass="command-field" />
                 <Button fx:id="sendButton" defaultButton="true" onAction="#handleUserInput"
-                        styleClass="send-button" text="Send" />
+                        styleClass="send-button" text="Log quest" />
             </children>
         </HBox>
     </children>

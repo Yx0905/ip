@@ -19,7 +19,7 @@ public class OtakuTest {
 
         assertTrue(otaku.getResponse("todo read book").contains("[T][ ] read book"));
         assertEquals(" Please give a whole task number after `mark`.", otaku.getResponse("mark one"));
-        assertEquals(" Here are the tasks in your list:\n1.[T][ ] read book", otaku.getResponse("list"));
+        assertEquals(" Your quest log:\n1.[T][ ] read book", otaku.getResponse("list"));
     }
 
     @Test
@@ -30,7 +30,7 @@ public class OtakuTest {
         firstSession.getResponse("mark 1");
 
         Otaku secondSession = new Otaku(dataFile);
-        assertEquals(" Here are the tasks in your list:\n"
+        assertEquals(" Your quest log:\n"
                 + "1.[D][X] submit report (by: Sep 30 2026)", secondSession.getResponse("list"));
     }
 
