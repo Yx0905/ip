@@ -14,6 +14,7 @@ import otaku.storage.Storage;
 import otaku.task.Deadline;
 import otaku.task.Event;
 import otaku.task.Task;
+import otaku.task.TaskSorter;
 import otaku.task.Todo;
 
 /** Provides Otaku's command-processing logic for both the CLI and JavaFX interfaces. */
@@ -110,10 +111,12 @@ public class Otaku {
             return updateTaskStatus(command, type, tasks);
         case DELETE:
             return deleteTask(command, tasks);
+        case SORT:
+            return sortTasks(command, tasks);
         default:
             throw new OtakuException(
                     "I don't recognize that command. Try todo, deadline, event, list, find, mark, unmark, "
-                            + "delete, or bye.");
+                            + "delete, sort, or bye.");
         }
     }
 
@@ -181,6 +184,13 @@ public class Otaku {
                 + "\n Now you have " + tasks.size() + " tasks in the list.", true);
     }
 
+    /** Sorts dated tasks chronologically and places undated tasks last. */
+    private static CommandResult sortTasks(String command, ArrayList<Task> tasks) throws OtakuException {
+        requireNoArguments(getArguments(command, CommandType.SORT), "sort");
+        TaskSorter.sortByDate(tasks);
+        return new CommandResult(formatTasks(tasks, null), true);
+    }
+
     private static OtakuException eventFormatException() {
         return new OtakuException(
                 "An event needs a description, a start time after `/from`, and an end time after `/to`.");
@@ -223,6 +233,12 @@ public class Otaku {
     private static void requireNonEmpty(String value, String message) throws OtakuException {
         if (value.isEmpty()) {
             throw new OtakuException(message);
+        }
+    }
+
+    private static void requireNoArguments(String arguments, String command) throws OtakuException {
+        if (!arguments.isEmpty()) {
+            throw new OtakuException("The `" + command + "` command does not accept arguments.");
         }
     }
 

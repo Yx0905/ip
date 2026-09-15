@@ -10,6 +10,7 @@ public enum CommandType {
     MARK,
     UNMARK,
     DELETE,
+    SORT,
     BYE,
     UNKNOWN
 }
