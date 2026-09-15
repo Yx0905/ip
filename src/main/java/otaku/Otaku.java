@@ -69,7 +69,7 @@ public class Otaku {
                 + "| | | || | / _ \\ | ' /| | | |\n"
                 + "| |_| || |/ ___ \\| . \\| |_| |\n"
                 + " \\___/ |_/_/   \\_\\_|\\_\\\\___/";
-        String greeting = banner + "\nKonnichiwa! I'm Otaku, your questkeeper."
+        String greeting = banner + "\nHello! I'm Otaku, your questkeeper."
                 + "\nWhat mission shall we tackle next?";
         return loadWarning.isEmpty() ? greeting : greeting + "\n" + loadWarning;
     }
@@ -81,12 +81,16 @@ public class Otaku {
 
     /** Processes one user command and returns its text together with its error status. */
     public CommandResponse getCommandResponse(String command) {
-        CommandType commandType = getCommandType(command);
+        String normalizedCommand = normalizeCommand(command);
+        if (normalizedCommand.isEmpty()) {
+            return new CommandResponse(" I need a command before I can update the quest log.", true);
+        }
+        CommandType commandType = getCommandType(normalizedCommand);
         if (commandType == CommandType.BYE) {
             return new CommandResponse("Quest log sealed. Mata ne!", false);
         }
         try {
-            CommandResult result = processCommand(command, commandType, tasks);
+            CommandResult result = processCommand(normalizedCommand, commandType, tasks);
             if (result.tasksChanged()) {
                 storage.save(tasks);
             }
@@ -142,7 +146,10 @@ public class Otaku {
 
     /** Adds a deadline task described by the command. */
     private static CommandResult addDeadline(String command, ArrayList<Task> tasks) throws OtakuException {
-        String[] parts = getArguments(command, CommandType.DEADLINE).split("\\s+/by\\s*", 2);
+        String[] parts = getArguments(command, CommandType.DEADLINE).split("\\s+/by(?:\\s+|$)", -1);
+        if (parts.length > 2) {
+            throw new OtakuException("A deadline accepts exactly one `/by` parameter.");
+        }
         if (parts.length != 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
             throw new OtakuException("A deadline needs a description and a time after `/by`.");
         }
@@ -151,19 +158,26 @@ public class Otaku {
 
     /** Adds an event task described by the command. */
     private static CommandResult addEvent(String command, ArrayList<Task> tasks) throws OtakuException {
-        String[] descriptionAndTimes = getArguments(command, CommandType.EVENT).split("\\s+/from\\s+", 2);
+        String[] descriptionAndTimes = getArguments(command, CommandType.EVENT)
+                .split("\\s+/from(?:\\s+|$)", -1);
+        if (descriptionAndTimes.length > 2) {
+            throw new OtakuException("An event accepts exactly one `/from` parameter.");
+        }
         if (descriptionAndTimes.length != 2) {
             throw eventFormatException();
         }
-        String[] times = descriptionAndTimes[1].split("\\s+/to\\s*", 2);
+        String[] times = descriptionAndTimes[1].split("\\s+/to(?:\\s+|$)", -1);
+        if (times.length > 2) {
+            throw new OtakuException("An event accepts exactly one `/to` parameter.");
+        }
         if (descriptionAndTimes[0].trim().isEmpty() || times.length != 2
                 || times[0].trim().isEmpty() || times[1].trim().isEmpty()) {
             throw eventFormatException();
         }
         LocalDate from = parseDate(times[0].trim());
         LocalDate to = parseDate(times[1].trim());
-        if (to.isBefore(from)) {
-            throw new OtakuException("An event's end date cannot be before its start date.");
+        if (!to.isAfter(from)) {
+            throw new OtakuException("An event's end date must be after its start date.");
         }
         return addTask(tasks, new Event(descriptionAndTimes[0].trim(), from, to));
     }
@@ -204,8 +218,9 @@ public class Otaku {
 
     /** Returns the command word's enum value, or {@link CommandType#UNKNOWN}. */
     private static CommandType getCommandType(String command) {
+        String normalizedCommand = normalizeCommand(command);
         return Arrays.stream(CommandType.values())
-                .filter(type -> matchesCommandWord(command, type))
+                .filter(type -> matchesCommandWord(normalizedCommand, type))
                 .findFirst()
                 .orElse(CommandType.UNKNOWN);
     }
@@ -213,7 +228,15 @@ public class Otaku {
     /** Returns whether the input starts with the word for the given command type. */
     private static boolean matchesCommandWord(String command, CommandType type) {
         String commandWord = type.name().toLowerCase(Locale.ROOT);
-        return command.equals(commandWord) || command.startsWith(commandWord + " ");
+        return command.equals(commandWord)
+                || (command.startsWith(commandWord)
+                        && command.length() > commandWord.length()
+                        && Character.isWhitespace(command.charAt(commandWord.length())));
+    }
+
+    /** Trims a command and collapses repeated whitespace to a single space. */
+    private static String normalizeCommand(String command) {
+        return command == null ? "" : command.trim().replaceAll("\\s+", " ");
     }
 
     /** Returns the text following the command word. */
@@ -272,10 +295,13 @@ public class Otaku {
         }
     }
 
-    private static CommandResult addTask(ArrayList<Task> tasks, Task task) {
+    private static CommandResult addTask(ArrayList<Task> tasks, Task task) throws OtakuException {
         assert tasks != null : "A task must be added to an initialized task list";
         assert task != null : "Only a constructed task can be added to the task list";
 
+        if (tasks.stream().anyMatch(existingTask -> hasSameDetails(existingTask, task))) {
+            throw new OtakuException("That quest is already in your log.");
+        }
         tasks.add(task);
         return new CommandResult(" Quest accepted! I've added this task:\n   " + task
                 + "\n " + formatQuestCount(tasks.size()), true);
@@ -285,6 +311,22 @@ public class Otaku {
     private static String formatQuestCount(int taskCount) {
         String noun = taskCount == 1 ? "quest" : "quests";
         return "Your log now holds " + taskCount + " " + noun + ".";
+    }
+
+    /** Returns whether two tasks have the same type, description, and dates. */
+    private static boolean hasSameDetails(Task first, Task second) {
+        if (first.getClass() != second.getClass()
+                || !first.getDescription().equals(second.getDescription())) {
+            return false;
+        }
+        if (first instanceof Deadline firstDeadline && second instanceof Deadline secondDeadline) {
+            return firstDeadline.getBy().equals(secondDeadline.getBy());
+        }
+        if (first instanceof Event firstEvent && second instanceof Event secondEvent) {
+            return firstEvent.getFrom().equals(secondEvent.getFrom())
+                    && firstEvent.getTo().equals(secondEvent.getTo());
+        }
+        return true;
     }
 
     /** Couples a command's display text with whether the task file needs saving. */

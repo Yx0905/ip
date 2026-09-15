@@ -95,8 +95,12 @@ public class Storage {
             } else if (fields[0].equals("D") && fields.length == 4) {
                 task = new Deadline(decode(fields[2]), LocalDate.parse(decode(fields[3])));
             } else if (fields[0].equals("E") && fields.length == 5) {
-                task = new Event(decode(fields[2]), LocalDate.parse(decode(fields[3])),
-                        LocalDate.parse(decode(fields[4])));
+                LocalDate from = LocalDate.parse(decode(fields[3]));
+                LocalDate to = LocalDate.parse(decode(fields[4]));
+                if (!to.isAfter(from)) {
+                    throw new IllegalArgumentException();
+                }
+                task = new Event(decode(fields[2]), from, to);
             } else {
                 throw new IllegalArgumentException();
             }

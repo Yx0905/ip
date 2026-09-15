@@ -89,4 +89,16 @@ public class StorageTest {
 
         assertEquals("Saved task data is invalid on line 2.", exception.getMessage());
     }
+
+    @Test
+    public void load_eventWithEqualDates_throwsExceptionWithLineNumber() throws IOException {
+        Path dataFile = tempDirectory.resolve("tasks.txt");
+        String invalidEvent = "E|0|c3luYw==|MjAyNi0wOS0yMA==|MjAyNi0wOS0yMA==";
+        Files.writeString(dataFile, invalidEvent, StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile);
+
+        OtakuException exception = assertThrows(OtakuException.class, storage::load);
+
+        assertEquals("Saved task data is invalid on line 1.", exception.getMessage());
+    }
 }
