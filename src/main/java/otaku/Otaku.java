@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -187,13 +188,16 @@ public class Otaku {
 
     /** Returns the command word's enum value, or {@link CommandType#UNKNOWN}. */
     private static CommandType getCommandType(String command) {
-        for (CommandType type : CommandType.values()) {
-            String word = type.name().toLowerCase(Locale.ROOT);
-            if (command.equals(word) || command.startsWith(word + " ")) {
-                return type;
-            }
-        }
-        return CommandType.UNKNOWN;
+        return Arrays.stream(CommandType.values())
+                .filter(type -> matchesCommandWord(command, type))
+                .findFirst()
+                .orElse(CommandType.UNKNOWN);
+    }
+
+    /** Returns whether the input starts with the word for the given command type. */
+    private static boolean matchesCommandWord(String command, CommandType type) {
+        String commandWord = type.name().toLowerCase(Locale.ROOT);
+        return command.equals(commandWord) || command.startsWith(commandWord + " ");
     }
 
     /** Returns the text following the command word. */
