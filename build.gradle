@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
     id 'application'
     id 'com.gradleup.shadow' version '9.5.1'
 }
@@ -42,6 +43,22 @@ test {
         showStackTraces = true
         showStandardStreams = false
     }
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        html.required = true
+        xml.required = true
+    }
+
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: [
+                'otaku/Launcher.class',
+                'otaku/ui/**'
+        ])
+    }))
 }
 
 application {

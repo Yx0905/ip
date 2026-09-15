@@ -2,6 +2,7 @@ package otaku.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -38,5 +39,11 @@ public class TaskTest {
         assertTrue(task.containsKeyword("book"));
         assertFalse(task.containsKeyword("Book"));
         assertFalse(task.containsKeyword("magazine"));
+    }
+
+    @Test
+    public void constructor_nullOrBlankDescription_throwsAssertionError() {
+        assertThrows(AssertionError.class, () -> new Todo(null));
+        assertThrows(AssertionError.class, () -> new Todo("   "));
     }
 }

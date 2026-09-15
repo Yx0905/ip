@@ -1,6 +1,7 @@
 package otaku.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 
@@ -24,5 +25,14 @@ public class EventTest {
 
         assertEquals(from, event.getFrom());
         assertEquals(to, event.getTo());
+    }
+
+    @Test
+    public void constructor_invalidDates_throwsAssertionError() {
+        LocalDate date = LocalDate.of(2026, 8, 5);
+
+        assertThrows(AssertionError.class, () -> new Event("meeting", date, date));
+        assertThrows(AssertionError.class,
+                () -> new Event("meeting", date, date.minusDays(1)));
     }
 }
