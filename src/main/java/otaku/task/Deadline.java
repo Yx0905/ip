@@ -14,6 +14,8 @@ public class Deadline extends Task {
     /** Creates an incomplete deadline task. */
     public Deadline(String description, LocalDate by) {
         super(description);
+        assert by != null : "A deadline date must be parsed before construction";
+
         this.by = by;
     }
 

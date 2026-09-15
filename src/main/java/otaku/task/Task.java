@@ -11,6 +11,9 @@ public abstract class Task {
      * @param description description of the task
      */
     protected Task(String description) {
+        assert description != null : "A task description must be provided by the command parser";
+        assert !description.isBlank() : "A task description must be validated before construction";
+
         this.description = description;
         this.isDone = false;
     }

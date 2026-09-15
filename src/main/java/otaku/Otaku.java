@@ -91,6 +91,8 @@ public class Otaku {
     /** Processes one non-exit command. */
     private static CommandResult processCommand(String command, CommandType type,
             ArrayList<Task> tasks) throws OtakuException {
+        assert type != CommandType.BYE : "Exit commands must be handled before command processing";
+
         if (type == CommandType.LIST) {
             return new CommandResult(formatTasks(tasks, null), false);
         }
@@ -196,6 +198,8 @@ public class Otaku {
 
     private static int parseTaskNumber(String input, String command,
             int taskCount) throws OtakuException {
+        assert taskCount >= 0 : "A task list cannot contain a negative number of tasks";
+
         try {
             int number = Integer.parseInt(input);
             if (number < 1 || number > taskCount) {
@@ -209,6 +213,9 @@ public class Otaku {
     }
 
     private static CommandResult addTask(ArrayList<Task> tasks, Task task) {
+        assert tasks != null : "A task must be added to an initialized task list";
+        assert task != null : "Only a constructed task can be added to the task list";
+
         tasks.add(task);
         return new CommandResult(" Got it. I've added this task:\n   " + task
                 + "\n Now you have " + tasks.size() + " tasks in the list.", true);
