@@ -43,9 +43,9 @@ public class MainWindow extends AnchorPane {
         if (input.isEmpty() || otaku == null) {
             return;
         }
-        String response = otaku.getResponse(input);
+        Otaku.CommandResponse response = otaku.getCommandResponse(input);
         dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input), DialogBox.getOtakuDialog(response));
+                DialogBox.getUserDialog(input), DialogBox.getOtakuDialog(response.message(), response.isError()));
         userInput.clear();
         if (input.equals("bye")) {
             userInput.setDisable(true);

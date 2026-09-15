@@ -29,21 +29,32 @@ public class DialogBox extends HBox {
             throw new IllegalStateException("Unable to load the dialog box view", e);
         }
         dialog.setText(text);
+        widthProperty().addListener((observable, oldWidth, newWidth) ->
+                dialog.setMaxWidth(Math.max(240, newWidth.doubleValue() * 0.78 - 54)));
     }
 
     /** Creates a right-aligned message from the user. */
     public static DialogBox getUserDialog(String text) {
         DialogBox box = new DialogBox(text);
-        box.avatar.setText("YOU");
+        box.avatar.setManaged(false);
+        box.avatar.setVisible(false);
         box.getStyleClass().add("user-dialog");
         return box;
     }
 
     /** Creates a left-aligned message from Otaku. */
     public static DialogBox getOtakuDialog(String text) {
+        return getOtakuDialog(text, false);
+    }
+
+    /** Creates a left-aligned message from Otaku, highlighting it when it is an error. */
+    public static DialogBox getOtakuDialog(String text, boolean isError) {
         DialogBox box = new DialogBox(text);
-        box.avatar.setText("OTA");
+        box.avatar.setText(isError ? "!" : "O");
         box.getStyleClass().add("otaku-dialog");
+        if (isError) {
+            box.getStyleClass().add("error-dialog");
+        }
         ObservableList<Node> reversed = FXCollections.observableArrayList(box.getChildren());
         Collections.reverse(reversed);
         box.getChildren().setAll(reversed);

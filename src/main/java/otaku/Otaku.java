@@ -75,18 +75,23 @@ public class Otaku {
 
     /** Processes one user command and returns the text to display. */
     public String getResponse(String command) {
+        return getCommandResponse(command).message();
+    }
+
+    /** Processes one user command and returns its text together with its error status. */
+    public CommandResponse getCommandResponse(String command) {
         CommandType commandType = getCommandType(command);
         if (commandType == CommandType.BYE) {
-            return "Bye. Hope to see you again soon!";
+            return new CommandResponse("Bye. Hope to see you again soon!", false);
         }
         try {
             CommandResult result = processCommand(command, commandType, tasks);
             if (result.tasksChanged()) {
                 storage.save(tasks);
             }
-            return result.message();
+            return new CommandResponse(result.message(), false);
         } catch (OtakuException e) {
-            return " " + e.getMessage();
+            return new CommandResponse(" " + e.getMessage(), true);
         }
     }
 
@@ -277,5 +282,9 @@ public class Otaku {
 
     /** Couples a command's display text with whether the task file needs saving. */
     private record CommandResult(String message, boolean tasksChanged) {
+    }
+
+    /** Contains display text and whether it represents an error. */
+    public record CommandResponse(String message, boolean isError) {
     }
 }
