@@ -2,6 +2,8 @@
 
 Otaku is a task-tracking chatbot that manages todos, deadlines, and events through text commands.
 
+![Otaku's graphical interface](Ui.png)
+
 ## Sorting tasks chronologically
 
 Use `sort` to place dated tasks in chronological order. Deadlines use their due date, events use their start date,
