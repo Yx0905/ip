@@ -64,11 +64,11 @@ public class Otaku {
 
     /** Returns the greeting shown when either interface starts. */
     public String getGreeting() {
-        String banner = "  ___ _____  _    _  ___   _\n"
-                + " / _ \\_   _|/ \\  | |/ / | | |\n"
-                + "| | | || | / _ \\ | ' /| | | |\n"
-                + "| |_| || |/ ___ \\| . \\| |_| |\n"
-                + " \\___/ |_/_/   \\_\\_|\\_\\\\___/";
+        String banner = "  ___  _        _\n"
+                + " / _ \\| |_ __ _| | ___   _\n"
+                + "| | | | __/ _` | |/ / | | |\n"
+                + "| |_| | || (_| |   <| |_| |\n"
+                + " \\___/ \\__\\__,_|_|\\_\\\\__,_|";
         String greeting = banner + "\nHello! I'm Otaku, your questkeeper."
                 + "\nWhat mission shall we tackle next?";
         return loadWarning.isEmpty() ? greeting : greeting + "\n" + loadWarning;

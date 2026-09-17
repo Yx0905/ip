@@ -32,7 +32,7 @@ public class MainWindow extends AnchorPane {
     /** Supplies the chatbot and displays its initial greeting. */
     public void setOtaku(Otaku otaku) {
         this.otaku = otaku;
-        dialogContainer.getChildren().add(DialogBox.getOtakuDialog(otaku.getGreeting()));
+        dialogContainer.getChildren().add(DialogBox.getOtakuGreetingDialog(otaku.getGreeting()));
         Platform.runLater(userInput::requestFocus);
     }
 

@@ -8,9 +8,9 @@
 .bubble { -fx-background-radius: 12; -fx-padding: 10 13; -fx-font-size: 14px; -fx-text-fill: #172033; }
 .user-dialog .bubble { -fx-background-color: #0e7490; -fx-text-fill: white; }
 .otaku-dialog .bubble { -fx-background-color: white; -fx-border-color: #cbdce5; -fx-border-radius: 14; }
-.avatar { -fx-background-color: #164e63; -fx-background-radius: 16; -fx-font-size: 12px; -fx-font-weight: 800; -fx-text-fill: #cffafe; }
+.avatar { -fx-background-color: transparent; }
+.avatar #errorIcon { -fx-background-color: #be123c; -fx-background-radius: 18; -fx-font-size: 12px; -fx-font-weight: 800; -fx-text-fill: white; -fx-min-height: 32; -fx-min-width: 32; }
 .error-dialog .bubble { -fx-background-color: #fff1f2; -fx-border-color: #fda4af; -fx-text-fill: #9f1239; }
-.error-dialog .avatar { -fx-background-color: #be123c; }
 .composer { -fx-background-color: white; -fx-border-color: #cbdce5 transparent transparent transparent; -fx-padding: 15 18; }
 .command-field { -fx-background-color: #f3f7fa; -fx-background-radius: 10; -fx-border-color: #b8d2dc; -fx-border-radius: 10; -fx-padding: 10 12; }
 .command-field:focused { -fx-border-color: #0891b2; }
